@@ -45,7 +45,7 @@ import javax.security.auth.callback.TextOutputCallback;
  * Twilio Verify Collector Decision Node
  */
 @Node.Metadata(outcomeProvider = AbstractDecisionNode.OutcomeProvider.class,
-        configClass = VerifyAuthCollectorDecisionNode.Config.class)
+        configClass = VerifyAuthCollectorDecisionNode.Config.class, tags = {"mfa", "multi-factor authentication", "partner"})
 public class VerifyAuthCollectorDecisionNode extends AbstractDecisionNode {
 
     private static final String BUNDLE = "com/twilio/verify/VerifyAuthCollectorDecisionNode";
