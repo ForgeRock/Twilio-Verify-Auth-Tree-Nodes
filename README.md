@@ -32,7 +32,7 @@ If you'd like to build the integration from source, the code in this repository 
 ### Twilio Verify Sender Auth Node Configuration
 This node kicks off the Twilio Verify request via the configured channel to the users device. This node can
  also optionally request the identifier from the user to send the one-time password. By default, this node looks
-  to the `userIdentifier` value in sharedState for the user identifier.
+  to the `userIdentifier` value in sharedState for the user identifier. Twilio can also be configured to use geopermissions in the Twilio console, and information on that can be found [here](https://www.twilio.com/docs/verify/preventing-toll-fraud/verify-geo-permissions).
 * **Account SID** - The unique string to identify the Account found in the Twilio account dashboard.
 * **Authentication Token** - The authentication token found in the Twilio account dashboard.
 * **Service SID** - The unique string to identify the Service in the Twilio account dashboard.
