@@ -45,7 +45,7 @@ import javax.security.auth.callback.TextOutputCallback;
  * Twilio Verify Sender Node
  */
 @Node.Metadata(outcomeProvider = SingleOutcomeNode.OutcomeProvider.class,
-        configClass = VerifyAuthSenderNode.Config.class)
+        configClass = VerifyAuthSenderNode.Config.class, tags = {"mfa", "multi-factor authentication", "partner"})
 public class VerifyAuthSenderNode extends SingleOutcomeNode {
 
     static final String USER_IDENTIFIER = "userIdentifier";
@@ -85,8 +85,8 @@ public class VerifyAuthSenderNode extends SingleOutcomeNode {
          * The authentication token found in the Twilio account dashboard.
          */
         @Attribute(order = 400)
-        default VerificationCheck.Channel channel() {
-            return VerificationCheck.Channel.SMS;
+        default Module channel() {
+            return Module.SMS;
         }
 
         /**
@@ -118,8 +118,8 @@ public class VerifyAuthSenderNode extends SingleOutcomeNode {
         ResourceBundle bundle = context.request.locales.getBundleInPreferredLocale(BUNDLE, getClass().getClassLoader());
         String userIdentifier = context.sharedState.get(USER_IDENTIFIER).asString();
         if (null == userIdentifier && config.requestIdentifier()) {
-            boolean isPhone = config.channel() == VerificationCheck.Channel.SMS ||
-                    config.channel() == VerificationCheck.Channel.CALL;
+            boolean isPhone = config.channel().currentChannel() == "sms" ||
+                    config.channel().currentChannel() == "call" || config.channel().currentChannel() == "whatsapp";
             if (context.hasCallbacks() && context.getCallback(NameCallback.class).isPresent()) {
                 String callbackValue = context.getCallback(NameCallback.class).get().getName();
                 userIdentifier = isPhone ? "+" + callbackValue.replaceAll("[\\D]", "") : callbackValue;
@@ -133,8 +133,25 @@ public class VerifyAuthSenderNode extends SingleOutcomeNode {
             }
 
         }
-        Verification.creator(config.serviceSID(), userIdentifier, config.channel().toString()).create();
+        Verification.creator(config.serviceSID(), userIdentifier, config.channel().currentChannel()).create();
         return goToNext().replaceSharedState(
                 context.sharedState.put(SERVICE_SID, config.serviceSID()).put(USER_IDENTIFIER, userIdentifier)).build();
     }
+
+    public enum Module {
+            SMS("sms"),
+            CALL("call"),
+            EMAIL("email"),
+            WHATSAPP("whatsapp");
+
+            private final String currentChannel;
+
+            Module(String currentChannel) {
+                this.currentChannel = currentChannel;
+            }
+
+            public String currentChannel() {
+                return currentChannel;
+            }
+        }
 }

@@ -60,7 +60,7 @@ import java.util.Map;
  */
 public class VerifyAuthNodePlugin extends AbstractNodeAmPlugin {
 
-    static private String currentVersion = "1.1.0";
+    static private String currentVersion = "1.3.0";
 
     /**
      * Specify the Map of list of node classes that the plugin is providing. These will then be installed and
