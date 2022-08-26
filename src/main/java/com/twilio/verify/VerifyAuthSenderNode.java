@@ -45,7 +45,7 @@ import javax.security.auth.callback.TextOutputCallback;
  * Twilio Verify Sender Node
  */
 @Node.Metadata(outcomeProvider = SingleOutcomeNode.OutcomeProvider.class,
-        configClass = VerifyAuthSenderNode.Config.class)
+        configClass = VerifyAuthSenderNode.Config.class, tags = {"mfa", "multi-factor authentication", "partner"})
 public class VerifyAuthSenderNode extends SingleOutcomeNode {
 
     static final String USER_IDENTIFIER = "userIdentifier";
