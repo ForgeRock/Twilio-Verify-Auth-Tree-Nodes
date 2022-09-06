@@ -34,7 +34,19 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mockito.version>3.12.4</mockito.version>
         <mockito-testng.version>0.4.13</mockito-testng.version>
+        <forgerockDistMgmtReleasesUrl>https://maven.forgerock.org/repo/internal-releases</forgerockDistMgmtReleasesUrl>
     </properties>
+
+    <distributionManagement>
+        <repository>
+            <id>forgerock-internal-snapshots</id>
+            <name>ForgeRock Internal Snapshots Repository</name>
+            <url>https://maven.forgerock.org/repo/internal-snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+    </distributionManagement>
 
     <dependencyManagement>
         <dependencies>
