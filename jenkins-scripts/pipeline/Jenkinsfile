@@ -17,3 +17,5 @@
 @Library(['forgerock-pipeline-libs', 'partner-nodes-libs']) _
 
 buildPartnerNodes()
+
+println "etc etc etc"
