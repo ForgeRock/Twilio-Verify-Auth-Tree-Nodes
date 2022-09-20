@@ -48,7 +48,10 @@ identifiers would be `(555) 323-1234` as the country code is not present.
 This node collects the one-time password from the user and validates that password against the Twilio Verify service.
 * **Hide Code Text** - If enabled, hides the code text from the end user similar to a password collector.
 
-
+### Twilio Verify Lookup Auth Node Configuration
+This node will do a lookup and check if the provided phone number is valid.
+* **Account SID** - The unique string to identify the Account found in the Twilio account dashboard.
+* **Authentication Token** - The authentication token found in the Twilio account dashboard.
 
  ### Example Flow
 The example flow below validates the users username and password, asks the user for their phone number, and

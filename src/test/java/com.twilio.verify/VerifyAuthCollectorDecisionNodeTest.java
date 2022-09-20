@@ -51,57 +51,37 @@ import java.util.ArrayList;
 import com.twilio.verify.VerifyAuthSenderNode.Module;
 import com.twilio.rest.verify.v2.service.Verification;
 import com.twilio.exception.ApiException;
-public class VerifyAuthSenderNodeTest {
+public class VerifyAuthCollectorDecisionNodeTest {
 
     @Mock
-    private VerifyAuthSenderNode.Config config;
+    private VerifyAuthCollectorDecisionNode.Config config;
 
     @Mock
     private Realm realm;
 
     private TreeContext context;
 
-    private VerifyAuthSenderNode node;
-
+    private VerifyAuthCollectorDecisionNode node;
 
    @BeforeMethod
    public void setUp() throws Exception {
        node = null;
        initMocks(this);
-       char[] auth = new char[5];
-       auth[0] = 't';
-       auth[1] = 'e';
-       auth[2] = 's';
-       auth[3] = 't';
-       when(config.accountSID()).thenReturn("accountSID");
-       when(config.authToken()).thenReturn(auth);
-       when(config.serviceSID()).thenReturn("serviceSID");
-       when(config.channel()).thenReturn(Module.SMS);
-
-       node = new VerifyAuthSenderNode(config);
+       node = new VerifyAuthCollectorDecisionNode(config);
    }
 
     @Test
     public void testProcessWithNoCallbacks() throws Exception {
-      JsonValue sharedState = json(object(field("userIdentifier", "+11234567890")));
-      assertThatExceptionOfType(ApiException.class)
-              .isThrownBy(() -> {
-                 node.process(getContext(sharedState));
-            });
-    }
+      JsonValue sharedState = json(object(field("userIdentifier", "+18457412693")));
+      }
 
     @Test
     public void testProcessWithCallbacks() throws Exception {
-      JsonValue sharedState = json(object(field("userIdentifier", "+11234567890")));
+      JsonValue sharedState = json(object(field("userIdentifier", "+18457412693")));
       ArrayList<Callback> callbacks = new ArrayList<Callback>() {{
           add(new TextOutputCallback(TextOutputCallback.INFORMATION, "callback.key Text"));
-          add(new NameCallback("twilio_response"));
+          add(new NameCallback("duo_response"));
       }};
-      assertThatExceptionOfType(ApiException.class)
-        .isThrownBy(() -> {
-           node.process(getContext(sharedState, new PreferredLocales(), callbacks));
-      });
-
     }
 
     private TreeContext getContext() {

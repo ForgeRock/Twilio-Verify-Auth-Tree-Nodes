@@ -45,7 +45,7 @@ import javax.security.auth.callback.TextOutputCallback;
  * Twilio Verify Sender Node
  */
 @Node.Metadata(outcomeProvider = SingleOutcomeNode.OutcomeProvider.class,
-        configClass = VerifyAuthSenderNode.Config.class, tags = {"mfa", "multi-factor authentication", "partner"})
+        configClass = VerifyAuthSenderNode.Config.class, tags = {"mfa", "multi-factor authentication", "partner", "marketplace"})
 public class VerifyAuthSenderNode extends SingleOutcomeNode {
 
     static final String USER_IDENTIFIER = "userIdentifier";
@@ -53,6 +53,7 @@ public class VerifyAuthSenderNode extends SingleOutcomeNode {
     private static final String BUNDLE = "com/twilio/verify/VerifyAuthSenderNode";
     private final Logger logger = LoggerFactory.getLogger(VerifyAuthSenderNode.class);
     private final Config config;
+    private String loggerPrefix = "[Twilio Auth Sender Node][Partner]";
 
     /**
      * Configuration for the node.
@@ -114,7 +115,7 @@ public class VerifyAuthSenderNode extends SingleOutcomeNode {
 
     @Override
     public Action process(TreeContext context) {
-        logger.debug("VerifyAuthSenderNode started");
+        logger.debug(loggerPrefix + "VerifyAuthSenderNode started");
         ResourceBundle bundle = context.request.locales.getBundleInPreferredLocale(BUNDLE, getClass().getClassLoader());
         String userIdentifier = context.sharedState.get(USER_IDENTIFIER).asString();
         if (null == userIdentifier && config.requestIdentifier()) {
@@ -123,7 +124,7 @@ public class VerifyAuthSenderNode extends SingleOutcomeNode {
             if (context.hasCallbacks() && context.getCallback(NameCallback.class).isPresent()) {
                 String callbackValue = context.getCallback(NameCallback.class).get().getName();
                 userIdentifier = isPhone ? "+" + callbackValue.replaceAll("[\\D]", "") : callbackValue;
-                logger.debug("User Identifier is {}", userIdentifier);
+                logger.debug(loggerPrefix + "User Identifier is {}", userIdentifier);
             } else {
                 String key = isPhone ? "phoneNumber" : "email";
                 return send(Arrays.asList(new TextOutputCallback(TextOutputCallback.INFORMATION,
