@@ -45,12 +45,12 @@ import javax.security.auth.callback.TextOutputCallback;
  * Twilio Verify Collector Decision Node
  */
 @Node.Metadata(outcomeProvider = AbstractDecisionNode.OutcomeProvider.class,
-        configClass = VerifyAuthCollectorDecisionNode.Config.class, tags = {"mfa", "multi-factor authentication", "partner", "marketplace"})
+        configClass = VerifyAuthCollectorDecisionNode.Config.class, tags = {"mfa", "multi-factor authentication", "marketplace", "trustnetwork"})
 public class VerifyAuthCollectorDecisionNode extends AbstractDecisionNode {
 
     private static final String BUNDLE = "com/twilio/verify/VerifyAuthCollectorDecisionNode";
     private final Logger logger = LoggerFactory.getLogger(VerifyAuthCollectorDecisionNode.class);
-    private String loggerPrefix = "[Twilio Auth Collector Decision Node][Partner]";
+    private String loggerPrefix = "[Twilio Auth Collector Decision Node][Partner] ";
     private final Config config;
 
 

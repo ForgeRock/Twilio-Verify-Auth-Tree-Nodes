@@ -45,7 +45,7 @@ import javax.security.auth.callback.TextOutputCallback;
  * Twilio Verify Sender Node
  */
 @Node.Metadata(outcomeProvider = SingleOutcomeNode.OutcomeProvider.class,
-        configClass = VerifyAuthSenderNode.Config.class, tags = {"mfa", "multi-factor authentication", "partner", "marketplace"})
+        configClass = VerifyAuthSenderNode.Config.class, tags = {"mfa", "multi-factor authentication", "marketplace", "trustnetwork"})
 public class VerifyAuthSenderNode extends SingleOutcomeNode {
 
     static final String USER_IDENTIFIER = "userIdentifier";
@@ -53,7 +53,7 @@ public class VerifyAuthSenderNode extends SingleOutcomeNode {
     private static final String BUNDLE = "com/twilio/verify/VerifyAuthSenderNode";
     private final Logger logger = LoggerFactory.getLogger(VerifyAuthSenderNode.class);
     private final Config config;
-    private String loggerPrefix = "[Twilio Auth Sender Node][Partner]";
+    private String loggerPrefix = "[Twilio Auth Sender Node][Partner] ";
 
     /**
      * Configuration for the node.

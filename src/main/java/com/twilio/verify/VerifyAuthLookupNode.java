@@ -46,11 +46,11 @@ import com.twilio.Twilio;
  * Twilio Verify Collector Decision Node
  */
 @Node.Metadata(outcomeProvider = AbstractDecisionNode.OutcomeProvider.class,
-        configClass = VerifyAuthLookupNode.Config.class, tags = {"mfa", "multi-factor authentication", "partner", "marketplace"})
+        configClass = VerifyAuthLookupNode.Config.class, tags = {"mfa", "multi-factor authentication", "marketplace", "trustnetwork"})
 public class VerifyAuthLookupNode extends AbstractDecisionNode {
     private final Logger logger = LoggerFactory.getLogger(VerifyAuthLookupNode.class);
     private final Config config;
-    private String loggerPrefix = "[Twilio Lookup Node][Partner]";
+    private String loggerPrefix = "[Twilio Lookup Node][Partner] ";
 
 
     /**
@@ -85,28 +85,19 @@ public class VerifyAuthLookupNode extends AbstractDecisionNode {
 
     @Override
     public Action process(TreeContext context) {
+        String phoneNumber = context.sharedState.get("userIdentifier").asString();
+        PhoneNumber number = PhoneNumber
+                    .fetcher(new com.twilio.type.PhoneNumber(phoneNumber))
+                    .fetch();
+
+        String carrier = number.getCarrier().get("type");
         try {
-            String phoneNumber = context.sharedState.get("userIdentifier").asString();
-            PhoneNumber number = PhoneNumber
-                        .fetcher(new com.twilio.type.PhoneNumber(phoneNumber))
-                        .fetch();
-
-            //String carrier = number.getCarrier().get("name");
-            try {
-                 String type =  number.getCarrier().get("type");
-                 if (type != "mobile") {
-                    return goTo(false).build();
-                 }
-            } catch(Exception ex) {
-
-            }
-
-        } catch(com.twilio.exception.ApiException e) {
-            if(e.getStatusCode() == 404) {
-                logger.error(loggerPrefix+"Phone number not found.");
+             String type =  number.getCarrier().get("type");
+             if (type != "mobile") {
                 return goTo(false).build();
-            } else {
-            }
+             }
+        } catch(Exception ex) {
+            logger.error(loggerPrefix + e.printStackTrace().toString());
         }
         return goTo(true).build();
     }
