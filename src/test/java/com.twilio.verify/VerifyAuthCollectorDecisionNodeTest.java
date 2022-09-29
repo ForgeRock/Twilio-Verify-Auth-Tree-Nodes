@@ -67,6 +67,7 @@ public class VerifyAuthCollectorDecisionNodeTest {
    public void setUp() throws Exception {
        node = null;
        initMocks(this);
+       when(config.identifierSharedState()).thenReturn("userIdentifier");
        node = new VerifyAuthCollectorDecisionNode(config);
    }
 

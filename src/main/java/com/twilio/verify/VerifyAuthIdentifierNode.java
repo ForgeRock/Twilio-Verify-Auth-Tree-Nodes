@@ -29,8 +29,6 @@ import org.slf4j.LoggerFactory;
 import org.forgerock.openam.sm.annotations.adapters.Password;
 import com.google.common.base.Strings;
 import com.google.inject.assistedinject.Assisted;
-import com.twilio.rest.verify.v2.service.VerificationCheck;
-import com.twilio.rest.lookups.v1.PhoneNumber;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -40,37 +38,35 @@ import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.TextOutputCallback;
-import com.twilio.Twilio;
+import static org.forgerock.openam.auth.node.api.SharedStateConstants.REALM;
+import static org.forgerock.openam.auth.node.api.SharedStateConstants.USERNAME;
+import java.util.Set;
+import org.forgerock.openam.core.CoreWrapper;
+import org.forgerock.openam.auth.node.api.Action.ActionBuilder;
+import com.sun.identity.idm.AMIdentity;
+import org.forgerock.json.JsonValue;
 
 /**
  * Twilio Verify Collector Decision Node
  */
 @Node.Metadata(outcomeProvider = AbstractDecisionNode.OutcomeProvider.class,
-        configClass = VerifyAuthLookupNode.Config.class, tags = {"mfa", "multi-factor authentication", "marketplace", "trustnetwork"})
-public class VerifyAuthLookupNode extends AbstractDecisionNode {
-    private final Logger logger = LoggerFactory.getLogger(VerifyAuthLookupNode.class);
+        configClass = VerifyAuthIdentifierNode.Config.class, tags = {"mfa", "multi-factor authentication", "marketplace", "trustnetwork"})
+public class VerifyAuthIdentifierNode extends AbstractDecisionNode {
+    private final Logger logger = LoggerFactory.getLogger(VerifyAuthIdentifierNode.class);
     private final Config config;
-    private String loggerPrefix = "[Twilio Lookup Node][Partner] ";
+    private String loggerPrefix = "[Twilio Identifier Node][Partner] ";
+    private final CoreWrapper coreWrapper;
 
 
     /**
      * Configuration for the node.
      */
     public interface Config {
-
-        @Attribute(order = 100, validators = {RequiredValueValidator.class})
-        default String accountSID() {
+        @Attribute(order = 100)
+        default String identifierAttribute() {
             return "";
         }
-
-        /**
-         * The authentication token found in the Twilio account dashboard.
-         */
-        @Attribute(order = 200, validators = {RequiredValueValidator.class})
-        @Password
-        char[] authToken();
-
-        @Attribute(order = 300)
+        @Attribute(order = 200)
         default String identifierSharedState() {
             return "userIdentifier";
         }
@@ -83,27 +79,29 @@ public class VerifyAuthLookupNode extends AbstractDecisionNode {
      * @param config The service config.
      */
     @Inject
-    public VerifyAuthLookupNode(@Assisted Config config) {
+    public VerifyAuthIdentifierNode(@Assisted Config config, CoreWrapper coreWrapper) {
+        this.coreWrapper = coreWrapper;
         this.config = config;
-        Twilio.init(config.accountSID(), String.valueOf(config.authToken()));
     }
 
     @Override
     public Action process(TreeContext context) {
-        String phoneNumber = context.sharedState.get(config.identifierSharedState()).asString();
-        PhoneNumber number = PhoneNumber
-                    .fetcher(new com.twilio.type.PhoneNumber(phoneNumber))
-                    .fetch();
+        ActionBuilder action;
+        action = goTo(true);
+        String username = context.sharedState.get(USERNAME).asString();
+        String userIdentifier = null;
+        Set<String> identifiers;
         try {
-             String type =  number.getCarrier().get("type");
-             if (type != "mobile") {
-                return goTo(false).build();
-             }
-        } catch(Exception ex) {
-            logger.error(loggerPrefix + "Exception occurred");
-            ex.printStackTrace();
+            identifiers = coreWrapper.getIdentity(username,coreWrapper.convertRealmPathToRealmDn(context.sharedState.get(REALM).asString())).getAttribute(config.identifierAttribute());
+            if (identifiers != null && !identifiers.isEmpty()) {
+                userIdentifier = identifiers.iterator().next();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return goTo(true).build();
+
+        JsonValue copyState = context.sharedState.copy().put(config.identifierSharedState(), userIdentifier);
+        return action.replaceSharedState(copyState).build();
     }
 
 

@@ -77,6 +77,7 @@ public class VerifyAuthSenderNodeTest {
        when(config.authToken()).thenReturn(auth);
        when(config.serviceSID()).thenReturn("serviceSID");
        when(config.channel()).thenReturn(Module.SMS);
+       when(config.identifierSharedState()).thenReturn("userIdentifier");
 
        node = new VerifyAuthSenderNode(config);
    }

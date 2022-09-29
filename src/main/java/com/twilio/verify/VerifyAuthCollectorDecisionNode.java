@@ -67,6 +67,11 @@ public class VerifyAuthCollectorDecisionNode extends AbstractDecisionNode {
             return true;
         }
 
+        @Attribute(order = 200)
+        default String identifierSharedState() {
+            return "userIdentifier";
+        }
+
     }
 
 
@@ -96,7 +101,7 @@ public class VerifyAuthCollectorDecisionNode extends AbstractDecisionNode {
         }
         return callbackCode.filter(code -> !Strings.isNullOrEmpty(code))
                            .map(code -> checkCode(context.sharedState.get(VerifyAuthSenderNode.SERVICE_SID).asString(), code,
-                                  context.sharedState.get(VerifyAuthSenderNode.USER_IDENTIFIER).asString()))
+                                  context.sharedState.get(config.identifierSharedState()).asString()))
                            .orElseGet(() -> collectCode(context));
     }
 

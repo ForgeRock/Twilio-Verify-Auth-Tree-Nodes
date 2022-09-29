@@ -60,7 +60,7 @@ import java.util.Map;
  */
 public class VerifyAuthNodePlugin extends AbstractNodeAmPlugin {
 
-    static private String currentVersion = "1.8.0";
+    static private String currentVersion = "1.20.8";
 
     /**
      * Specify the Map of list of node classes that the plugin is providing. These will then be installed and
@@ -73,7 +73,8 @@ public class VerifyAuthNodePlugin extends AbstractNodeAmPlugin {
         return Collections.singletonMap(VerifyAuthNodePlugin.currentVersion,
                                         Arrays.asList(VerifyAuthSenderNode.class,
                                                       VerifyAuthCollectorDecisionNode.class,
-                                                      VerifyAuthLookupNode.class));
+                                                      VerifyAuthLookupNode.class,
+                                                      VerifyAuthIdentifierNode.class));
     }
 
     /**
@@ -110,6 +111,10 @@ public class VerifyAuthNodePlugin extends AbstractNodeAmPlugin {
      */
     @Override
     public void upgrade(String fromVersion) throws PluginException {
+        pluginTools.upgradeAuthNode(VerifyAuthSenderNode.class);
+        pluginTools.upgradeAuthNode(VerifyAuthCollectorDecisionNode.class);
+        pluginTools.upgradeAuthNode(VerifyAuthLookupNode.class);
+        pluginTools.upgradeAuthNode(VerifyAuthIdentifierNode.class);
         super.upgrade(fromVersion);
     }
 
