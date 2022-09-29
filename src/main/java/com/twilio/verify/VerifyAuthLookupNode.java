@@ -90,20 +90,35 @@ public class VerifyAuthLookupNode extends AbstractDecisionNode {
 
     @Override
     public Action process(TreeContext context) {
-        String phoneNumber = context.sharedState.get(config.identifierSharedState()).asString();
-        PhoneNumber number = PhoneNumber
-                    .fetcher(new com.twilio.type.PhoneNumber(phoneNumber))
-                    .fetch();
+        logger.debug(loggerPrefix + "Started");
         try {
-             String type =  number.getCarrier().get("type");
-             if (type != "mobile") {
+            logger.debug(loggerPrefix + "Grabbing phone number from "+ config.identifierSharedState() +" shared state");
+            String phoneNumber = context.sharedState.get(config.identifierSharedState()).asString();
+            if(phoneNumber == null || phoneNumber == "") {
+                logger.error(loggerPrefix + "Phone number not found");
                 return goTo(false).build();
+            }
+            logger.debug(loggerPrefix + "User phone number" + phoneNumber);
+            PhoneNumber number = PhoneNumber
+                    .fetcher(new com.twilio.type.PhoneNumber(phoneNumber))
+                    .setType("carrier")
+                    .fetch();
+
+             String type = number.getCarrier().get("type");
+             if (type.equals("mobile")) {
+                logger.debug(loggerPrefix + "Phone type is mobile");
+                return goTo(true).build();
+
              }
+             logger.error(loggerPrefix + "Phone type is not mobile");
+             logger.error(loggerPrefix + "Phone type is " + type);
+             return goTo(false).build();
         } catch(Exception ex) {
             logger.error(loggerPrefix + "Exception occurred");
             ex.printStackTrace();
+            return goTo(false).build();
         }
-        return goTo(true).build();
+
     }
 
 

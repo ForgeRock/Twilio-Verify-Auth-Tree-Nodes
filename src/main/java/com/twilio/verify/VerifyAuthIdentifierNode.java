@@ -57,7 +57,6 @@ public class VerifyAuthIdentifierNode extends AbstractDecisionNode {
     private String loggerPrefix = "[Twilio Identifier Node][Partner] ";
     private final CoreWrapper coreWrapper;
 
-
     /**
      * Configuration for the node.
      */
@@ -86,23 +85,27 @@ public class VerifyAuthIdentifierNode extends AbstractDecisionNode {
 
     @Override
     public Action process(TreeContext context) {
-        ActionBuilder action;
-        action = goTo(true);
-        String username = context.sharedState.get(USERNAME).asString();
-        String userIdentifier = null;
-        Set<String> identifiers;
+        logger.debug(loggerPrefix + "Started");
         try {
+            ActionBuilder action;
+            action = goTo(true);
+            String username = context.sharedState.get(USERNAME).asString();
+            String userIdentifier = null;
+            Set<String> identifiers;
+            logger.debug(loggerPrefix + "Grabbing user identifiers for " + config.identifierAttribute());
             identifiers = coreWrapper.getIdentity(username,coreWrapper.convertRealmPathToRealmDn(context.sharedState.get(REALM).asString())).getAttribute(config.identifierAttribute());
             if (identifiers != null && !identifiers.isEmpty()) {
                 userIdentifier = identifiers.iterator().next();
+                logger.debug(loggerPrefix + "User identifier found: " + userIdentifier);
             }
+            JsonValue copyState = context.sharedState.copy().put(config.identifierSharedState(), userIdentifier);
+            return action.replaceSharedState(copyState).build();
         } catch (Exception e) {
+            logger.error(loggerPrefix + "Exception occurred");
             e.printStackTrace();
+            ActionBuilder action;
+            action = goTo(false);
+            return action.build();
         }
-
-        JsonValue copyState = context.sharedState.copy().put(config.identifierSharedState(), userIdentifier);
-        return action.replaceSharedState(copyState).build();
     }
-
-
 }

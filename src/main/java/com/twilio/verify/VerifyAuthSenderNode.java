@@ -119,7 +119,7 @@ public class VerifyAuthSenderNode extends SingleOutcomeNode {
 
     @Override
     public Action process(TreeContext context) {
-        logger.debug(loggerPrefix + "VerifyAuthSenderNode started");
+        logger.debug(loggerPrefix + "Started");
         ResourceBundle bundle = context.request.locales.getBundleInPreferredLocale(BUNDLE, getClass().getClassLoader());
         String userIdentifier = context.sharedState.get(config.identifierSharedState()).asString();
         if (null == userIdentifier && config.requestIdentifier()) {

@@ -88,7 +88,7 @@ public class VerifyAuthCollectorDecisionNode extends AbstractDecisionNode {
 
     @Override
     public Action process(TreeContext context) {
-        logger.debug("VerifyAuthCollectorDecision started");
+        logger.debug(loggerPrefix + "Started");
         Optional<String> callbackCode;
         if (config.hideCode()) {
             logger.debug(loggerPrefix+ "VerifyAuthCollectorDecision code is hidden");
