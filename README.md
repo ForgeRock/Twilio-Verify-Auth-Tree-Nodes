@@ -49,7 +49,7 @@ identifiers would be `(555) 323-1234` as the country code is not present.
 This node collects the one-time password from the user and validates that password against the Twilio Verify service.
 * **Hide Code Text** - If enabled, hides the code text from the end user similar to a password collector.
 * **Identifier Shared State** - The shared state variable to search for the identifier in.
-*
+
 ### Twilio Verify Lookup Auth Node Configuration
 This node will do a lookup and check if the provided phone number is valid mobile carrier.
 * **Account SID** - The unique string to identify the Account found in the Twilio account dashboard.
