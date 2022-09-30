@@ -43,14 +43,26 @@ identifier must contain the country code and can optionally contain special char
 removed before the request is sent to Twilio. Valid identifiers would be: `+15553231234` or `1(555)323-1234`. Invalid
 identifiers would be `(555) 323-1234` as the country code is not present.
 * **Request Identifier** - Should the node request the identifier from the user or should it look to the `userIdentifier` value in shared state.
+* **Identifier Shared State** - The shared state variable to search for the identifier in.
 
 ### Twilio Verify Collector Decision Auth Node Configuration
 This node collects the one-time password from the user and validates that password against the Twilio Verify service.
 * **Hide Code Text** - If enabled, hides the code text from the end user similar to a password collector.
+* **Identifier Shared State** - The shared state variable to search for the identifier in.
+
+### Twilio Verify Lookup Auth Node Configuration
+This node will do a lookup and check if the provided phone number is valid mobile carrier.
+* **Account SID** - The unique string to identify the Account found in the Twilio account dashboard.
+* **Authentication Token** - The authentication token found in the Twilio account dashboard.
+* **Identifier Shared State** - The shared state variable to search for the identifier in.
+
+### Twilio Verify Identifier Node Configuration
+This node will pull an attribute from the user's profile and store it in the shared state. These attributes can be the telephone number or email.
+* **Identifier Attribute** - The unique string to identify the Account found in the Twilio account dashboard.
+* **Identifier Shared State** - The shared state variable to store the identifier in.
 
 
-
- ### Example Flow
+### Example Flow 1
 The example flow below validates the users username and password, asks the user for their phone number, and
 sends a one-time password via SMS to that phone number. This is not a recommended flow for production use, but could
 be altered to pull the users phoneNumber from their profile.
@@ -58,5 +70,19 @@ To deploy this flow via the [AM-treetool](https://github.com/jonknightfr/AM-tree
 `cat Treetool/Twilio.json | amtree.sh -i verify -h https://{{AM_Domain}} -u amadmin -p {{admin_password}}`.
 
 ![ScreenShot](./images/verify.png)
+
+### Example Flow 2
+The example flow above validates the user's username and password, identifies the users, pulls the phone number from the users profile, and sends a one-time password via SMS to that phone number. The Identify Exister User Node has the following configuration
+* **Identifier** - _id
+* **Identity Attribute** - userName
+
+![ScreenShot](./images/verify-2.png)
+
+### Example Flow 3
+The example flow above validates the user's username and password, identifies the users, pulls the phone number from the users profile, verifies the phone number is a mobile carrier, and sends a one-time password via SMS to that phone number. The Identify Exister User Node has the following configuration:
+* **Identifier** - _id
+* **Identity Attribute** - userName
+
+![ScreenShot](./images/verify-3.png)
 
 [forgerock_platform]: https://www.forgerock.com/platform/  

@@ -45,11 +45,12 @@ import javax.security.auth.callback.TextOutputCallback;
  * Twilio Verify Collector Decision Node
  */
 @Node.Metadata(outcomeProvider = AbstractDecisionNode.OutcomeProvider.class,
-        configClass = VerifyAuthCollectorDecisionNode.Config.class, tags = {"mfa", "multi-factor authentication", "partner"})
+        configClass = VerifyAuthCollectorDecisionNode.Config.class, tags = {"mfa", "multi-factor authentication", "marketplace", "trustnetwork"})
 public class VerifyAuthCollectorDecisionNode extends AbstractDecisionNode {
 
     private static final String BUNDLE = "com/twilio/verify/VerifyAuthCollectorDecisionNode";
     private final Logger logger = LoggerFactory.getLogger(VerifyAuthCollectorDecisionNode.class);
+    private String loggerPrefix = "[Twilio Auth Collector Decision Node][Partner] ";
     private final Config config;
 
 
@@ -64,6 +65,11 @@ public class VerifyAuthCollectorDecisionNode extends AbstractDecisionNode {
         @Attribute(order = 100)
         default boolean hideCode() {
             return true;
+        }
+
+        @Attribute(order = 200)
+        default String identifierSharedState() {
+            return "userIdentifier";
         }
 
     }
@@ -82,26 +88,26 @@ public class VerifyAuthCollectorDecisionNode extends AbstractDecisionNode {
 
     @Override
     public Action process(TreeContext context) {
-        logger.debug("VerifyAuthCollectorDecision started");
+        logger.debug(loggerPrefix + "Started");
         Optional<String> callbackCode;
         if (config.hideCode()) {
-            logger.debug("VerifyAuthCollectorDecision code is hidden");
+            logger.debug(loggerPrefix+ "VerifyAuthCollectorDecision code is hidden");
             callbackCode = context.getCallback(PasswordCallback.class).map(PasswordCallback::getPassword)
                                   .map(String::new);
         } else {
-            logger.debug("VerifyAuthCollectorDecision code is not hidden");
+            logger.debug(loggerPrefix + "VerifyAuthCollectorDecision code is not hidden");
             callbackCode = context.getCallback(NameCallback.class)
                                   .map(NameCallback::getName);
         }
         return callbackCode.filter(code -> !Strings.isNullOrEmpty(code))
                            .map(code -> checkCode(context.sharedState.get(VerifyAuthSenderNode.SERVICE_SID).asString(), code,
-                                  context.sharedState.get(VerifyAuthSenderNode.USER_IDENTIFIER).asString()))
+                                  context.sharedState.get(config.identifierSharedState()).asString()))
                            .orElseGet(() -> collectCode(context));
     }
 
     private Action checkCode(String verifySID, String code, String userIdentifier) {
         VerificationCheck verification = VerificationCheck.creator(verifySID, code).setTo(userIdentifier).create();
-        logger.debug("Verification Status: {}", verification.getStatus());
+        logger.debug(loggerPrefix + "Verification Status: {}", verification.getStatus());
         if ("approved".equals(verification.getStatus())) {
             return goTo(true).build();
         }

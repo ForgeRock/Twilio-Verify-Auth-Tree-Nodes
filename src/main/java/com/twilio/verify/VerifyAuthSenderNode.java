@@ -45,14 +45,14 @@ import javax.security.auth.callback.TextOutputCallback;
  * Twilio Verify Sender Node
  */
 @Node.Metadata(outcomeProvider = SingleOutcomeNode.OutcomeProvider.class,
-        configClass = VerifyAuthSenderNode.Config.class, tags = {"mfa", "multi-factor authentication", "partner"})
+        configClass = VerifyAuthSenderNode.Config.class, tags = {"mfa", "multi-factor authentication", "marketplace", "trustnetwork"})
 public class VerifyAuthSenderNode extends SingleOutcomeNode {
 
-    static final String USER_IDENTIFIER = "userIdentifier";
     static final String SERVICE_SID = "serviceSID";
     private static final String BUNDLE = "com/twilio/verify/VerifyAuthSenderNode";
     private final Logger logger = LoggerFactory.getLogger(VerifyAuthSenderNode.class);
     private final Config config;
+    private String loggerPrefix = "[Twilio Auth Sender Node][Partner] ";
 
     /**
      * Configuration for the node.
@@ -97,6 +97,11 @@ public class VerifyAuthSenderNode extends SingleOutcomeNode {
             return false;
         }
 
+        @Attribute(order = 600)
+        default String identifierSharedState() {
+            return "userIdentifier";
+        }
+
     }
 
 
@@ -114,28 +119,28 @@ public class VerifyAuthSenderNode extends SingleOutcomeNode {
 
     @Override
     public Action process(TreeContext context) {
-        logger.debug("VerifyAuthSenderNode started");
+        logger.debug(loggerPrefix + "Started");
         ResourceBundle bundle = context.request.locales.getBundleInPreferredLocale(BUNDLE, getClass().getClassLoader());
-        String userIdentifier = context.sharedState.get(USER_IDENTIFIER).asString();
+        String userIdentifier = context.sharedState.get(config.identifierSharedState()).asString();
         if (null == userIdentifier && config.requestIdentifier()) {
             boolean isPhone = config.channel().currentChannel() == "sms" ||
                     config.channel().currentChannel() == "call" || config.channel().currentChannel() == "whatsapp";
             if (context.hasCallbacks() && context.getCallback(NameCallback.class).isPresent()) {
                 String callbackValue = context.getCallback(NameCallback.class).get().getName();
                 userIdentifier = isPhone ? "+" + callbackValue.replaceAll("[\\D]", "") : callbackValue;
-                logger.debug("User Identifier is {}", userIdentifier);
+                logger.debug(loggerPrefix + "User Identifier is {}", userIdentifier);
             } else {
                 String key = isPhone ? "phoneNumber" : "email";
                 return send(Arrays.asList(new TextOutputCallback(TextOutputCallback.INFORMATION,
                                                                  bundle.getString("callback." + key + "Text")),
-                                          new NameCallback(bundle.getString("callback." + key), USER_IDENTIFIER)))
+                                          new NameCallback(bundle.getString("callback." + key), config.identifierSharedState())))
                         .build();
             }
 
         }
         Verification.creator(config.serviceSID(), userIdentifier, config.channel().currentChannel()).create();
         return goToNext().replaceSharedState(
-                context.sharedState.put(SERVICE_SID, config.serviceSID()).put(USER_IDENTIFIER, userIdentifier)).build();
+                context.sharedState.put(SERVICE_SID, config.serviceSID()).put(config.identifierSharedState(), userIdentifier)).build();
     }
 
     public enum Module {
