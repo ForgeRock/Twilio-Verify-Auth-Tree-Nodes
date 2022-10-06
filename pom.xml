@@ -41,7 +41,7 @@
         <repository>
             <id>forgerock-internal-releases</id>
             <name>ForgeRock Internal Release Repository</name>
-            <url>http://maven.forgerock.org/repo/internal-releases</url>
+            <url>https://maven.forgerock.org/repo/internal-releases</url>
         </repository>
     </distributionManagement>
 
@@ -111,7 +111,7 @@
         <repository>
             <id>forgerock-internal-releases</id>
             <name>ForgeRock Internal Releases Repository</name>
-            <url>http://maven.forgerock.org/repo/internal-releases</url>
+            <url>https://maven.forgerock.org/repo/internal-releases</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
