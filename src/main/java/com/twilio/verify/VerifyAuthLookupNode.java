@@ -41,12 +41,16 @@ import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.TextOutputCallback;
 import com.twilio.Twilio;
+import java.util.Arrays;
+import org.forgerock.util.i18n.PreferredLocales;
+import java.util.Collections;
+import org.forgerock.json.JsonValue;
 
 /**
  * Twilio Verify Collector Decision Node
  */
-@Node.Metadata(outcomeProvider = AbstractDecisionNode.OutcomeProvider.class,
-        configClass = VerifyAuthLookupNode.Config.class, tags = {"mfa", "multi-factor authentication", "marketplace", "trustnetwork"})
+@Node.Metadata(outcomeProvider = VerifyAuthLookupNode.OutcomeProvider.class,
+        configClass = VerifyAuthLookupNode.Config.class, tags = {"multi-factor authentication", "marketplace", "trustnetwork"})
 public class VerifyAuthLookupNode extends AbstractDecisionNode {
     private final Logger logger = LoggerFactory.getLogger(VerifyAuthLookupNode.class);
     private final Config config;
@@ -96,7 +100,7 @@ public class VerifyAuthLookupNode extends AbstractDecisionNode {
             String phoneNumber = context.sharedState.get(config.identifierSharedState()).asString();
             if(phoneNumber == null || phoneNumber == "") {
                 logger.error(loggerPrefix + "Phone number not found");
-                return goTo(false).build();
+                return Action.goTo("True").build();
             }
             logger.debug(loggerPrefix + "User phone number" + phoneNumber);
             PhoneNumber number = PhoneNumber
@@ -107,19 +111,46 @@ public class VerifyAuthLookupNode extends AbstractDecisionNode {
              String type = number.getCarrier().get("type");
              if (type.equals("mobile")) {
                 logger.debug(loggerPrefix + "Phone type is mobile");
-                return goTo(true).build();
+                return Action.goTo("True").build();
 
              }
              logger.error(loggerPrefix + "Phone type is not mobile");
              logger.error(loggerPrefix + "Phone type is " + type);
-             return goTo(false).build();
+             return Action.goTo("False").build();
         } catch(Exception ex) {
             logger.error(loggerPrefix + "Exception occurred");
             ex.printStackTrace();
-            return goTo(false).build();
+            context.sharedState.put("Exception", ex.toString());
+            return Action.goTo("Error").build();
         }
 
     }
+
+    public static final class OutcomeProvider implements org.forgerock.openam.auth.node.api.OutcomeProvider {
+            /**
+             * Outcomes Ids for this node.
+             */
+            static final String SUCCESS_OUTCOME = "true";
+            static final String ERROR_OUTCOME = "error";
+            static final String FALSE_OUTCOME = "false";
+            private static final String BUNDLE = VerifyAuthLookupNode.class.getName();
+
+            @Override
+            public List<Outcome> getOutcomes(PreferredLocales locales, JsonValue nodeAttributes) {
+
+                ResourceBundle bundle = locales.getBundleInPreferredLocale(BUNDLE, OutcomeProvider.class.getClassLoader());
+
+                List<Outcome> results = new ArrayList<>(
+                        Arrays.asList(
+                                new Outcome(SUCCESS_OUTCOME, "True")
+                        )
+                );
+                results.add(new Outcome(FALSE_OUTCOME, "False"));
+                results.add(new Outcome(ERROR_OUTCOME, "Error"));
+
+                return Collections.unmodifiableList(results);
+            }
+        }
 
 
 }
