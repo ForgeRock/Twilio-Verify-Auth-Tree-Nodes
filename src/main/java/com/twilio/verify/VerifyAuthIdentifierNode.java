@@ -91,7 +91,7 @@ public class VerifyAuthIdentifierNode extends AbstractDecisionNode {
         logger.debug(loggerPrefix + "Started");
         try {
             ActionBuilder action;
-            action = Action.goTo("True");
+            action = Action.goTo("true");
             String username = context.sharedState.get(USERNAME).asString();
             String userIdentifier = null;
             Set<String> identifiers;
@@ -108,7 +108,7 @@ public class VerifyAuthIdentifierNode extends AbstractDecisionNode {
             e.printStackTrace();
             context.sharedState.put("Exception", e.toString());
             ActionBuilder action;
-            action = Action.goTo("Error");
+            action = Action.goTo("error");
             return action.build();
         }
     }

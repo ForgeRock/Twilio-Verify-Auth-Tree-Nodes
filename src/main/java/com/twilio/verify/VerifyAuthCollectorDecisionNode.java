@@ -112,7 +112,7 @@ public class VerifyAuthCollectorDecisionNode extends AbstractDecisionNode {
              logger.error(loggerPrefix + "Exception occurred");
              ex.printStackTrace();
              context.sharedState.put("Exception", ex.toString());
-             return Action.goTo("Error").build();
+             return Action.goTo("error").build();
          }
     }
 
@@ -120,9 +120,9 @@ public class VerifyAuthCollectorDecisionNode extends AbstractDecisionNode {
         VerificationCheck verification = VerificationCheck.creator(verifySID, code).setTo(userIdentifier).create();
         logger.debug(loggerPrefix + "Verification Status: {}", verification.getStatus());
         if ("approved".equals(verification.getStatus())) {
-            return Action.goTo("True").build();
+            return Action.goTo("true").build();
         }
-        return Action.goTo("False").build();
+        return Action.goTo("false").build();
 
     }
 
