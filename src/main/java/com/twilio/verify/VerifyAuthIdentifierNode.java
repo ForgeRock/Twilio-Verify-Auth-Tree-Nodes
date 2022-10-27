@@ -45,12 +45,15 @@ import org.forgerock.openam.core.CoreWrapper;
 import org.forgerock.openam.auth.node.api.Action.ActionBuilder;
 import com.sun.identity.idm.AMIdentity;
 import org.forgerock.json.JsonValue;
+import java.util.Arrays;
+import org.forgerock.util.i18n.PreferredLocales;
+import java.util.Collections;
 
 /**
  * Twilio Verify Collector Decision Node
  */
-@Node.Metadata(outcomeProvider = AbstractDecisionNode.OutcomeProvider.class,
-        configClass = VerifyAuthIdentifierNode.Config.class, tags = {"mfa", "multi-factor authentication", "marketplace", "trustnetwork"})
+@Node.Metadata(outcomeProvider = VerifyAuthIdentifierNode.OutcomeProvider.class,
+        configClass = VerifyAuthIdentifierNode.Config.class, tags = {"multi-factor authentication", "marketplace", "trustnetwork"})
 public class VerifyAuthIdentifierNode extends AbstractDecisionNode {
     private final Logger logger = LoggerFactory.getLogger(VerifyAuthIdentifierNode.class);
     private final Config config;
@@ -88,7 +91,7 @@ public class VerifyAuthIdentifierNode extends AbstractDecisionNode {
         logger.debug(loggerPrefix + "Started");
         try {
             ActionBuilder action;
-            action = goTo(true);
+            action = Action.goTo("true");
             String username = context.sharedState.get(USERNAME).asString();
             String userIdentifier = null;
             Set<String> identifiers;
@@ -103,9 +106,36 @@ public class VerifyAuthIdentifierNode extends AbstractDecisionNode {
         } catch (Exception e) {
             logger.error(loggerPrefix + "Exception occurred");
             e.printStackTrace();
+            context.sharedState.put("Exception", e.toString());
             ActionBuilder action;
-            action = goTo(false);
+            action = Action.goTo("error");
             return action.build();
+        }
+    }
+
+    public static final class OutcomeProvider implements org.forgerock.openam.auth.node.api.OutcomeProvider {
+        /**
+         * Outcomes Ids for this node.
+         */
+        static final String SUCCESS_OUTCOME = "true";
+        static final String ERROR_OUTCOME = "error";
+        static final String FALSE_OUTCOME = "false";
+        private static final String BUNDLE = VerifyAuthIdentifierNode.class.getName();
+
+        @Override
+        public List<Outcome> getOutcomes(PreferredLocales locales, JsonValue nodeAttributes) {
+
+            ResourceBundle bundle = locales.getBundleInPreferredLocale(BUNDLE, OutcomeProvider.class.getClassLoader());
+
+            List<Outcome> results = new ArrayList<>(
+                    Arrays.asList(
+                            new Outcome(SUCCESS_OUTCOME, "True")
+                    )
+            );
+            results.add(new Outcome(FALSE_OUTCOME, "False"));
+            results.add(new Outcome(ERROR_OUTCOME, "Error"));
+
+            return Collections.unmodifiableList(results);
         }
     }
 }

@@ -40,12 +40,16 @@ import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.TextOutputCallback;
+import java.util.Arrays;
+import org.forgerock.util.i18n.PreferredLocales;
+import java.util.Collections;
+import org.forgerock.json.JsonValue;
 
 /**
  * Twilio Verify Collector Decision Node
  */
-@Node.Metadata(outcomeProvider = AbstractDecisionNode.OutcomeProvider.class,
-        configClass = VerifyAuthCollectorDecisionNode.Config.class, tags = {"mfa", "multi-factor authentication", "marketplace", "trustnetwork"})
+@Node.Metadata(outcomeProvider = VerifyAuthCollectorDecisionNode.OutcomeProvider.class,
+        configClass = VerifyAuthCollectorDecisionNode.Config.class, tags = {"multi-factor authentication", "marketplace", "trustnetwork"})
 public class VerifyAuthCollectorDecisionNode extends AbstractDecisionNode {
 
     private static final String BUNDLE = "com/twilio/verify/VerifyAuthCollectorDecisionNode";
@@ -89,29 +93,36 @@ public class VerifyAuthCollectorDecisionNode extends AbstractDecisionNode {
     @Override
     public Action process(TreeContext context) {
         logger.debug(loggerPrefix + "Started");
-        Optional<String> callbackCode;
-        if (config.hideCode()) {
-            logger.debug(loggerPrefix+ "VerifyAuthCollectorDecision code is hidden");
-            callbackCode = context.getCallback(PasswordCallback.class).map(PasswordCallback::getPassword)
-                                  .map(String::new);
-        } else {
-            logger.debug(loggerPrefix + "VerifyAuthCollectorDecision code is not hidden");
-            callbackCode = context.getCallback(NameCallback.class)
-                                  .map(NameCallback::getName);
-        }
-        return callbackCode.filter(code -> !Strings.isNullOrEmpty(code))
-                           .map(code -> checkCode(context.sharedState.get(VerifyAuthSenderNode.SERVICE_SID).asString(), code,
-                                  context.sharedState.get(config.identifierSharedState()).asString()))
-                           .orElseGet(() -> collectCode(context));
+        try {
+            Optional<String> callbackCode;
+            if (config.hideCode()) {
+                logger.debug(loggerPrefix+ "VerifyAuthCollectorDecision code is hidden");
+                callbackCode = context.getCallback(PasswordCallback.class).map(PasswordCallback::getPassword)
+                                      .map(String::new);
+            } else {
+                logger.debug(loggerPrefix + "VerifyAuthCollectorDecision code is not hidden");
+                callbackCode = context.getCallback(NameCallback.class)
+                                      .map(NameCallback::getName);
+            }
+            return callbackCode.filter(code -> !Strings.isNullOrEmpty(code))
+                               .map(code -> checkCode(context.sharedState.get(VerifyAuthSenderNode.SERVICE_SID).asString(), code,
+                                      context.sharedState.get(config.identifierSharedState()).asString()))
+                               .orElseGet(() -> collectCode(context));
+       } catch(Exception ex) {
+             logger.error(loggerPrefix + "Exception occurred");
+             ex.printStackTrace();
+             context.sharedState.put("Exception", ex.toString());
+             return Action.goTo("error").build();
+         }
     }
 
     private Action checkCode(String verifySID, String code, String userIdentifier) {
         VerificationCheck verification = VerificationCheck.creator(verifySID, code).setTo(userIdentifier).create();
         logger.debug(loggerPrefix + "Verification Status: {}", verification.getStatus());
         if ("approved".equals(verification.getStatus())) {
-            return goTo(true).build();
+            return Action.goTo("true").build();
         }
-        return goTo(false).build();
+        return Action.goTo("false").build();
 
     }
 
@@ -126,5 +137,31 @@ public class VerifyAuthCollectorDecisionNode extends AbstractDecisionNode {
             callbacks.add(new NameCallback(bundle.getString("callback.code")));
         }
         return send(callbacks).build();
+    }
+
+    public static final class OutcomeProvider implements org.forgerock.openam.auth.node.api.OutcomeProvider {
+        /**
+         * Outcomes Ids for this node.
+         */
+        static final String SUCCESS_OUTCOME = "true";
+        static final String ERROR_OUTCOME = "error";
+        static final String FALSE_OUTCOME = "false";
+        private static final String BUNDLE = VerifyAuthCollectorDecisionNode.class.getName();
+
+        @Override
+        public List<Outcome> getOutcomes(PreferredLocales locales, JsonValue nodeAttributes) {
+
+            ResourceBundle bundle = locales.getBundleInPreferredLocale(BUNDLE, OutcomeProvider.class.getClassLoader());
+
+            List<Outcome> results = new ArrayList<>(
+                    Arrays.asList(
+                            new Outcome(SUCCESS_OUTCOME, "True")
+                    )
+            );
+            results.add(new Outcome(FALSE_OUTCOME, "False"));
+            results.add(new Outcome(ERROR_OUTCOME, "Error"));
+
+            return Collections.unmodifiableList(results);
+        }
     }
 }
