@@ -137,7 +137,7 @@
     "19689427-a62c-496a-9caf-9066dfdb9cf1": {
       "_id": "19689427-a62c-496a-9caf-9066dfdb9cf1",
       "_rev": "-2003153183",
-      "accountSID": "",
+      "accountSID": "<accountSID>",
       "authToken": null,
       "identifierSharedState": "userIdentifier",
       "_type": {
@@ -159,11 +159,11 @@
     "eca992ac-5698-4cab-b07c-c9222a81dcc4": {
       "_id": "eca992ac-5698-4cab-b07c-c9222a81dcc4",
       "_rev": "1262727637",
-      "accountSID": "",
+      "accountSID": "<accountSID>",
       "authToken": null,
       "channel": "SMS",
       "identifierSharedState": "userIdentifier",
-      "serviceSID": "",
+      "serviceSID": "<serviceSID>",
       "requestIdentifier": true,
       "_type": {
         "_id": "VerifyAuthSenderNode",
