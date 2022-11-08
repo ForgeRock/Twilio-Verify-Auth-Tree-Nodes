@@ -98,10 +98,7 @@ public class VerifyAuthLookupNode extends AbstractDecisionNode {
         try {
             logger.debug(loggerPrefix + "Grabbing phone number from "+ config.identifierSharedState() +" shared state");
             String phoneNumber = context.sharedState.get(config.identifierSharedState()).asString();
-            if(phoneNumber == null || phoneNumber == "") {
-                logger.error(loggerPrefix + "Phone number not found");
-                return Action.goTo("true").build();
-            }
+
             logger.debug(loggerPrefix + "User phone number" + phoneNumber);
             PhoneNumber number = PhoneNumber
                     .fetcher(new com.twilio.type.PhoneNumber(phoneNumber))

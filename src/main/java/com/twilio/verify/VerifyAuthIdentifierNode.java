@@ -100,6 +100,9 @@ public class VerifyAuthIdentifierNode extends AbstractDecisionNode {
             if (identifiers != null && !identifiers.isEmpty()) {
                 userIdentifier = identifiers.iterator().next();
                 logger.debug(loggerPrefix + "User identifier found: " + userIdentifier);
+            } else {
+                action = Action.goTo("false");
+                return action.build();
             }
             JsonValue copyState = context.sharedState.copy().put(config.identifierSharedState(), userIdentifier);
             return action.replaceSharedState(copyState).build();
