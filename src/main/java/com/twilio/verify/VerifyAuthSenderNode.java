@@ -149,7 +149,7 @@ public class VerifyAuthSenderNode extends AbstractDecisionNode {
             return Action.goTo("true").replaceSharedState(
                     context.sharedState.put(SERVICE_SID, config.serviceSID()).put(config.identifierSharedState(), userIdentifier)).build();
         } catch(Exception ex) {
-            logger.error(loggerPrefix + "Exception occurred");
+            logger.error(loggerPrefix + "Exception occurred" + ex.getMessage());
             ex.printStackTrace();
             context.sharedState.put("Exception", ex.toString());
             return Action.goTo("error").build();

@@ -118,7 +118,7 @@ public class VerifyAuthLookupNode extends AbstractDecisionNode {
              logger.error(loggerPrefix + "Phone type is " + type);
              return Action.goTo("false").build();
         } catch(Exception ex) {
-            logger.error(loggerPrefix + "Exception occurred");
+            logger.error(loggerPrefix + "Exception occurred" + ex.getMessage());
             ex.printStackTrace();
             context.sharedState.put("Exception", ex.toString());
             return Action.goTo("error").build();

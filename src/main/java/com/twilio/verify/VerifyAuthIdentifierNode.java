@@ -107,7 +107,7 @@ public class VerifyAuthIdentifierNode extends AbstractDecisionNode {
             JsonValue copyState = context.sharedState.copy().put(config.identifierSharedState(), userIdentifier);
             return action.replaceSharedState(copyState).build();
         } catch (Exception e) {
-            logger.error(loggerPrefix + "Exception occurred");
+            logger.error(loggerPrefix + "Exception occurred" + e.getMessage());
             e.printStackTrace();
             context.sharedState.put("Exception", e.toString());
             ActionBuilder action;

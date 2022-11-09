@@ -109,7 +109,7 @@ public class VerifyAuthCollectorDecisionNode extends AbstractDecisionNode {
                                       context.sharedState.get(config.identifierSharedState()).asString()))
                                .orElseGet(() -> collectCode(context));
        } catch(Exception ex) {
-             logger.error(loggerPrefix + "Exception occurred");
+             logger.error(loggerPrefix + "Exception occurred" + ex.getMessage());
              ex.printStackTrace();
              context.sharedState.put("Exception", ex.toString());
              return Action.goTo("error").build();
