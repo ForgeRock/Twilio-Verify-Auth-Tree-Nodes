@@ -2,7 +2,7 @@
   "meta": {
     "origin": "",
     "exportedBy": "tyler.gelinas@forgerock.com",
-    "exportDate": "2022-11-08T22:43:24.035Z",
+    "exportDate": "2022-11-09T22:51:26.803Z",
     "exportTool": "platform-admin ui tree export",
     "exportToolVersion": "1.0",
     "treesSelectedForExport": [
@@ -14,7 +14,7 @@
     "twilio": {
       "tree": {
         "_id": "twilio",
-        "_rev": "-1339903615",
+        "_rev": "1617457026",
         "identityResource": "managed/alpha_user",
         "uiConfig": {
           "categories": "[]"
@@ -25,8 +25,8 @@
             "x": 1322,
             "y": 8.5,
             "connections": {
-              "true": "aa694f66-88cd-4f5b-a5b5-8ce106e33334",
-              "error": "e301438c-0bd0-429c-ab0c-66126501069a"
+              "error": "e301438c-0bd0-429c-ab0c-66126501069a",
+              "true": "aa694f66-88cd-4f5b-a5b5-8ce106e33334"
             },
             "nodeType": "VerifyAuthSenderNode",
             "displayName": "Twilio Verify Sender Auth Node"
@@ -42,33 +42,34 @@
           },
           "54b0c2e9-56eb-44db-8cbf-c569240c95a6": {
             "x": 920,
-            "y": 3,
+            "y": 4,
             "connections": {
-              "false": "e301438c-0bd0-429c-ab0c-66126501069a",
-              "true": "70c08d5d-8d5d-4bff-ad18-dd5d7a472c83",
-              "error": "e301438c-0bd0-429c-ab0c-66126501069a"
+              "Found": "70c08d5d-8d5d-4bff-ad18-dd5d7a472c83",
+              "Error": "e301438c-0bd0-429c-ab0c-66126501069a",
+              "Not Found": "e301438c-0bd0-429c-ab0c-66126501069a"
             },
             "nodeType": "VerifyAuthIdentifierNode",
             "displayName": "Twilio Identifier Auth Node"
           },
           "70c08d5d-8d5d-4bff-ad18-dd5d7a472c83": {
-            "x": 1062,
-            "y": 262,
+            "x": 1086,
+            "y": 139,
             "connections": {
-              "true": "352fd47d-fe96-4c6f-b788-552351946343",
-              "false": "e301438c-0bd0-429c-ab0c-66126501069a",
-              "error": "e301438c-0bd0-429c-ab0c-66126501069a"
+              "Success": "352fd47d-fe96-4c6f-b788-552351946343",
+              "Error": "e301438c-0bd0-429c-ab0c-66126501069a",
+              "Not Mobile": "e301438c-0bd0-429c-ab0c-66126501069a",
+              "Not Found": "e301438c-0bd0-429c-ab0c-66126501069a"
             },
             "nodeType": "VerifyAuthLookupNode",
             "displayName": "Twilio Verify Lookup Auth Node"
           },
           "aa694f66-88cd-4f5b-a5b5-8ce106e33334": {
-            "x": 1489,
-            "y": 171,
+            "x": 1593,
+            "y": 89,
             "connections": {
+              "error": "e301438c-0bd0-429c-ab0c-66126501069a",
               "false": "e301438c-0bd0-429c-ab0c-66126501069a",
-              "true": "70e691a5-1e33-4ac3-a356-e7b6d60d92e0",
-              "error": "e301438c-0bd0-429c-ab0c-66126501069a"
+              "true": "70e691a5-1e33-4ac3-a356-e7b6d60d92e0"
             },
             "nodeType": "VerifyAuthCollectorDecisionNode",
             "displayName": "Twilio Verify Collector Decision Auth Node"
@@ -100,12 +101,12 @@
             "y": 155
           },
           "70e691a5-1e33-4ac3-a356-e7b6d60d92e0": {
-            "x": 2176,
-            "y": 230
+            "x": 2155,
+            "y": 27
           },
           "e301438c-0bd0-429c-ab0c-66126501069a": {
-            "x": 2176,
-            "y": 80
+            "x": 2133,
+            "y": 388
           }
         },
         "enabled": true
@@ -122,7 +123,7 @@
           "requestIdentifier": false,
           "_type": {
             "_id": "VerifyAuthSenderNode",
-            "name": "Twilio Verify Sender Auth Node",
+            "name": "Twilio Verify Sender Auth",
             "collection": true
           },
           "_outcomes": [
@@ -167,51 +168,55 @@
         },
         "54b0c2e9-56eb-44db-8cbf-c569240c95a6": {
           "_id": "54b0c2e9-56eb-44db-8cbf-c569240c95a6",
-          "_rev": "-600002023",
+          "_rev": "-2141437495",
           "identifierAttribute": "telephoneNumber",
           "identifierSharedState": "userIdentifier",
           "_type": {
             "_id": "VerifyAuthIdentifierNode",
-            "name": "Twilio Identifier Auth Node",
+            "name": "Twilio Identifier Auth",
             "collection": true
           },
           "_outcomes": [
             {
-              "id": "true",
-              "displayName": "True"
+              "id": "Found",
+              "displayName": "Found"
             },
             {
-              "id": "false",
-              "displayName": "False"
+              "id": "Not Found",
+              "displayName": "Not Found"
             },
             {
-              "id": "error",
+              "id": "Error",
               "displayName": "Error"
             }
           ]
         },
         "70c08d5d-8d5d-4bff-ad18-dd5d7a472c83": {
           "_id": "70c08d5d-8d5d-4bff-ad18-dd5d7a472c83",
-          "_rev": "-27541032",
+          "_rev": "-2128993550",
           "accountSID": "accountSID",
           "authToken": null,
           "identifierSharedState": "userIdentifier",
           "_type": {
             "_id": "VerifyAuthLookupNode",
-            "name": "Twilio Verify Lookup Auth Node",
+            "name": "Twilio Verify Lookup Auth",
             "collection": true
           },
           "_outcomes": [
             {
-              "id": "true",
-              "displayName": "True"
+              "id": "Success",
+              "displayName": "Success"
             },
             {
-              "id": "false",
-              "displayName": "False"
+              "id": "Not Found",
+              "displayName": "Not Found"
             },
             {
-              "id": "error",
+              "id": "Not Mobile",
+              "displayName": "Not Mobile"
+            },
+            {
+              "id": "Error",
               "displayName": "Error"
             }
           ]
@@ -223,7 +228,7 @@
           "identifierSharedState": "userIdentifier",
           "_type": {
             "_id": "VerifyAuthCollectorDecisionNode",
-            "name": "Twilio Verify Collector Decision Auth Node",
+            "name": "Twilio Verify Collector Decision Auth",
             "collection": true
           },
           "_outcomes": [
