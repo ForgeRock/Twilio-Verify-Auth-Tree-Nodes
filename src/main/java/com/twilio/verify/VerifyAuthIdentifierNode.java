@@ -91,7 +91,7 @@ public class VerifyAuthIdentifierNode extends AbstractDecisionNode {
         logger.debug(loggerPrefix + "Started");
         try {
             ActionBuilder action;
-            action = Action.goTo("true");
+            action = Action.goTo("Found");
             String username = context.sharedState.get(USERNAME).asString();
             String userIdentifier = null;
             Set<String> identifiers;
@@ -100,15 +100,19 @@ public class VerifyAuthIdentifierNode extends AbstractDecisionNode {
             if (identifiers != null && !identifiers.isEmpty()) {
                 userIdentifier = identifiers.iterator().next();
                 logger.debug(loggerPrefix + "User identifier found: " + userIdentifier);
+            } else {
+                logger.debug(loggerPrefix + "User identifier not found");
+                action = Action.goTo("Not Found");
+                return action.build();
             }
             JsonValue copyState = context.sharedState.copy().put(config.identifierSharedState(), userIdentifier);
             return action.replaceSharedState(copyState).build();
         } catch (Exception e) {
-            logger.error(loggerPrefix + "Exception occurred");
+            logger.error(loggerPrefix + "Exception occurred" + e.getMessage());
             e.printStackTrace();
             context.sharedState.put("Exception", e.toString());
             ActionBuilder action;
-            action = Action.goTo("error");
+            action = Action.goTo("Error");
             return action.build();
         }
     }
@@ -117,9 +121,9 @@ public class VerifyAuthIdentifierNode extends AbstractDecisionNode {
         /**
          * Outcomes Ids for this node.
          */
-        static final String SUCCESS_OUTCOME = "true";
-        static final String ERROR_OUTCOME = "error";
-        static final String FALSE_OUTCOME = "false";
+        static final String SUCCESS_OUTCOME = "Found";
+        static final String ERROR_OUTCOME = "Error";
+        static final String NOT_FOUND_OUTCOME = "Not Found";
         private static final String BUNDLE = VerifyAuthIdentifierNode.class.getName();
 
         @Override
@@ -129,11 +133,11 @@ public class VerifyAuthIdentifierNode extends AbstractDecisionNode {
 
             List<Outcome> results = new ArrayList<>(
                     Arrays.asList(
-                            new Outcome(SUCCESS_OUTCOME, "True")
+                            new Outcome(SUCCESS_OUTCOME, SUCCESS_OUTCOME)
                     )
             );
-            results.add(new Outcome(FALSE_OUTCOME, "False"));
-            results.add(new Outcome(ERROR_OUTCOME, "Error"));
+            results.add(new Outcome(NOT_FOUND_OUTCOME, NOT_FOUND_OUTCOME));
+            results.add(new Outcome(ERROR_OUTCOME, ERROR_OUTCOME));
 
             return Collections.unmodifiableList(results);
         }

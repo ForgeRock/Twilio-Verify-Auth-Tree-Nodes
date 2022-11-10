@@ -1,0 +1,334 @@
+{
+  "meta": {
+    "origin": "",
+    "exportedBy": "tyler.gelinas@forgerock.com",
+    "exportDate": "2022-11-09T22:51:26.803Z",
+    "exportTool": "platform-admin ui tree export",
+    "exportToolVersion": "1.0",
+    "treesSelectedForExport": [
+      "twilio"
+    ],
+    "innerTreesIncluded": []
+  },
+  "trees": {
+    "twilio": {
+      "tree": {
+        "_id": "twilio",
+        "_rev": "1617457026",
+        "identityResource": "managed/alpha_user",
+        "uiConfig": {
+          "categories": "[]"
+        },
+        "entryNodeId": "53fa7127-a4dc-4e3c-8912-c11f20ba744f",
+        "nodes": {
+          "352fd47d-fe96-4c6f-b788-552351946343": {
+            "x": 1322,
+            "y": 8.5,
+            "connections": {
+              "error": "e301438c-0bd0-429c-ab0c-66126501069a",
+              "true": "aa694f66-88cd-4f5b-a5b5-8ce106e33334"
+            },
+            "nodeType": "VerifyAuthSenderNode",
+            "displayName": "Twilio Verify Sender Auth Node"
+          },
+          "53fa7127-a4dc-4e3c-8912-c11f20ba744f": {
+            "x": 210,
+            "y": 109,
+            "connections": {
+              "outcome": "e5504a52-f753-413d-8566-4555b5079646"
+            },
+            "nodeType": "PageNode",
+            "displayName": "Page Node"
+          },
+          "54b0c2e9-56eb-44db-8cbf-c569240c95a6": {
+            "x": 920,
+            "y": 4,
+            "connections": {
+              "Found": "70c08d5d-8d5d-4bff-ad18-dd5d7a472c83",
+              "Error": "e301438c-0bd0-429c-ab0c-66126501069a",
+              "Not Found": "e301438c-0bd0-429c-ab0c-66126501069a"
+            },
+            "nodeType": "VerifyAuthIdentifierNode",
+            "displayName": "Twilio Identifier Auth Node"
+          },
+          "70c08d5d-8d5d-4bff-ad18-dd5d7a472c83": {
+            "x": 1086,
+            "y": 139,
+            "connections": {
+              "Success": "352fd47d-fe96-4c6f-b788-552351946343",
+              "Error": "e301438c-0bd0-429c-ab0c-66126501069a",
+              "Not Mobile": "e301438c-0bd0-429c-ab0c-66126501069a",
+              "Not Found": "e301438c-0bd0-429c-ab0c-66126501069a"
+            },
+            "nodeType": "VerifyAuthLookupNode",
+            "displayName": "Twilio Verify Lookup Auth Node"
+          },
+          "aa694f66-88cd-4f5b-a5b5-8ce106e33334": {
+            "x": 1593,
+            "y": 89,
+            "connections": {
+              "error": "e301438c-0bd0-429c-ab0c-66126501069a",
+              "false": "e301438c-0bd0-429c-ab0c-66126501069a",
+              "true": "70e691a5-1e33-4ac3-a356-e7b6d60d92e0"
+            },
+            "nodeType": "VerifyAuthCollectorDecisionNode",
+            "displayName": "Twilio Verify Collector Decision Auth Node"
+          },
+          "c15bcc99-4985-4658-a609-9aec7e89526d": {
+            "x": 692,
+            "y": 57.5,
+            "connections": {
+              "false": "e301438c-0bd0-429c-ab0c-66126501069a",
+              "true": "54b0c2e9-56eb-44db-8cbf-c569240c95a6"
+            },
+            "nodeType": "IdentifyExistingUserNode",
+            "displayName": "Identify Existing User"
+          },
+          "e5504a52-f753-413d-8566-4555b5079646": {
+            "x": 455,
+            "y": 172.5,
+            "connections": {
+              "false": "e301438c-0bd0-429c-ab0c-66126501069a",
+              "true": "c15bcc99-4985-4658-a609-9aec7e89526d"
+            },
+            "nodeType": "DataStoreDecisionNode",
+            "displayName": "Data Store Decision"
+          }
+        },
+        "staticNodes": {
+          "startNode": {
+            "x": 70,
+            "y": 155
+          },
+          "70e691a5-1e33-4ac3-a356-e7b6d60d92e0": {
+            "x": 2155,
+            "y": 27
+          },
+          "e301438c-0bd0-429c-ab0c-66126501069a": {
+            "x": 2133,
+            "y": 388
+          }
+        },
+        "enabled": true
+      },
+      "nodes": {
+        "352fd47d-fe96-4c6f-b788-552351946343": {
+          "_id": "352fd47d-fe96-4c6f-b788-552351946343",
+          "_rev": "900919877",
+          "accountSID": "accountSID",
+          "authToken": null,
+          "channel": "SMS",
+          "identifierSharedState": "userIdentifier",
+          "serviceSID": "serviceSID",
+          "requestIdentifier": false,
+          "_type": {
+            "_id": "VerifyAuthSenderNode",
+            "name": "Twilio Verify Sender Auth",
+            "collection": true
+          },
+          "_outcomes": [
+            {
+              "id": "true",
+              "displayName": "True"
+            },
+            {
+              "id": "error",
+              "displayName": "Error"
+            }
+          ]
+        },
+        "53fa7127-a4dc-4e3c-8912-c11f20ba744f": {
+          "_id": "53fa7127-a4dc-4e3c-8912-c11f20ba744f",
+          "_rev": "-1734669471",
+          "nodes": [
+            {
+              "_id": "a65c649b-915b-4623-ad55-1c9a4f693343",
+              "nodeType": "ValidatedUsernameNode",
+              "displayName": "Platform Username"
+            },
+            {
+              "_id": "7950caf5-4e62-4659-9e24-abfe5482ad43",
+              "nodeType": "ValidatedPasswordNode",
+              "displayName": "Platform Password"
+            }
+          ],
+          "pageDescription": {},
+          "pageHeader": {},
+          "_type": {
+            "_id": "PageNode",
+            "name": "Page Node",
+            "collection": true
+          },
+          "_outcomes": [
+            {
+              "id": "outcome",
+              "displayName": "Outcome"
+            }
+          ]
+        },
+        "54b0c2e9-56eb-44db-8cbf-c569240c95a6": {
+          "_id": "54b0c2e9-56eb-44db-8cbf-c569240c95a6",
+          "_rev": "-2141437495",
+          "identifierAttribute": "telephoneNumber",
+          "identifierSharedState": "userIdentifier",
+          "_type": {
+            "_id": "VerifyAuthIdentifierNode",
+            "name": "Twilio Identifier Auth",
+            "collection": true
+          },
+          "_outcomes": [
+            {
+              "id": "Found",
+              "displayName": "Found"
+            },
+            {
+              "id": "Not Found",
+              "displayName": "Not Found"
+            },
+            {
+              "id": "Error",
+              "displayName": "Error"
+            }
+          ]
+        },
+        "70c08d5d-8d5d-4bff-ad18-dd5d7a472c83": {
+          "_id": "70c08d5d-8d5d-4bff-ad18-dd5d7a472c83",
+          "_rev": "-2128993550",
+          "accountSID": "accountSID",
+          "authToken": null,
+          "identifierSharedState": "userIdentifier",
+          "_type": {
+            "_id": "VerifyAuthLookupNode",
+            "name": "Twilio Verify Lookup Auth",
+            "collection": true
+          },
+          "_outcomes": [
+            {
+              "id": "Success",
+              "displayName": "Success"
+            },
+            {
+              "id": "Not Found",
+              "displayName": "Not Found"
+            },
+            {
+              "id": "Not Mobile",
+              "displayName": "Not Mobile"
+            },
+            {
+              "id": "Error",
+              "displayName": "Error"
+            }
+          ]
+        },
+        "aa694f66-88cd-4f5b-a5b5-8ce106e33334": {
+          "_id": "aa694f66-88cd-4f5b-a5b5-8ce106e33334",
+          "_rev": "-1623087937",
+          "hideCode": true,
+          "identifierSharedState": "userIdentifier",
+          "_type": {
+            "_id": "VerifyAuthCollectorDecisionNode",
+            "name": "Twilio Verify Collector Decision Auth",
+            "collection": true
+          },
+          "_outcomes": [
+            {
+              "id": "true",
+              "displayName": "True"
+            },
+            {
+              "id": "false",
+              "displayName": "False"
+            },
+            {
+              "id": "error",
+              "displayName": "Error"
+            }
+          ]
+        },
+        "c15bcc99-4985-4658-a609-9aec7e89526d": {
+          "_id": "c15bcc99-4985-4658-a609-9aec7e89526d",
+          "_rev": "-1948822370",
+          "identityAttribute": "userName",
+          "identifier": "_id",
+          "_type": {
+            "_id": "IdentifyExistingUserNode",
+            "name": "Identify Existing User",
+            "collection": true
+          },
+          "_outcomes": [
+            {
+              "id": "true",
+              "displayName": "True"
+            },
+            {
+              "id": "false",
+              "displayName": "False"
+            }
+          ]
+        },
+        "e5504a52-f753-413d-8566-4555b5079646": {
+          "_id": "e5504a52-f753-413d-8566-4555b5079646",
+          "_rev": "-169049664",
+          "_type": {
+            "_id": "DataStoreDecisionNode",
+            "name": "Data Store Decision",
+            "collection": true
+          },
+          "_outcomes": [
+            {
+              "id": "true",
+              "displayName": "True"
+            },
+            {
+              "id": "false",
+              "displayName": "False"
+            }
+          ]
+        }
+      },
+      "innerNodes": {
+        "a65c649b-915b-4623-ad55-1c9a4f693343": {
+          "_id": "a65c649b-915b-4623-ad55-1c9a4f693343",
+          "_rev": "-825437363",
+          "usernameAttribute": "userName",
+          "validateInput": false,
+          "_type": {
+            "_id": "ValidatedUsernameNode",
+            "name": "Platform Username",
+            "collection": true
+          },
+          "_outcomes": [
+            {
+              "id": "outcome",
+              "displayName": "Outcome"
+            }
+          ]
+        },
+        "7950caf5-4e62-4659-9e24-abfe5482ad43": {
+          "_id": "7950caf5-4e62-4659-9e24-abfe5482ad43",
+          "_rev": "576643738",
+          "passwordAttribute": "password",
+          "validateInput": false,
+          "_type": {
+            "_id": "ValidatedPasswordNode",
+            "name": "Platform Password",
+            "collection": true
+          },
+          "_outcomes": [
+            {
+              "id": "outcome",
+              "displayName": "Outcome"
+            }
+          ]
+        }
+      },
+      "scripts": {},
+      "emailTemplates": {},
+      "socialIdentityProviders": {},
+      "themes": [],
+      "saml2Entities": {},
+      "circlesOfTrust": {}
+    }
+  }
+}
