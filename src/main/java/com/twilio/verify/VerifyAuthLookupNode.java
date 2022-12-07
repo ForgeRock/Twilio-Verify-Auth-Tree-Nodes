@@ -100,7 +100,7 @@ public class VerifyAuthLookupNode extends AbstractDecisionNode {
             String phoneNumber = context.sharedState.get(config.identifierSharedState()).asString();
             if(phoneNumber == null || phoneNumber == "") {
                 logger.error(loggerPrefix + "Phone number not found");
-                return Action.goTo("Not Found").build();
+                return Action.goTo("False").build();
             }
             logger.debug(loggerPrefix + "User phone number" + phoneNumber);
             PhoneNumber number = PhoneNumber
@@ -111,12 +111,12 @@ public class VerifyAuthLookupNode extends AbstractDecisionNode {
              String type = number.getCarrier().get("type");
              if (type.equals("mobile")) {
                 logger.debug(loggerPrefix + "Phone type is mobile");
-                return Action.goTo("Success").build();
+                return Action.goTo("True").build();
 
              }
              logger.error(loggerPrefix + "Phone type is not mobile");
              logger.error(loggerPrefix + "Phone type is " + type);
-             return Action.goTo("Not Mobile").build();
+             return Action.goTo("False").build();
         } catch(Exception ex) {
             logger.error(loggerPrefix + "Exception occurred" + ex.getMessage());
             ex.printStackTrace();
@@ -130,10 +130,10 @@ public class VerifyAuthLookupNode extends AbstractDecisionNode {
             /**
              * Outcomes Ids for this node.
              */
-            static final String SUCCESS_OUTCOME = "Success";
+            static final String SUCCESS_OUTCOME = "True";
             static final String ERROR_OUTCOME = "Error";
-            static final String NOT_FOUND_OUTCOME = "Not Found";
-            static final String NOT_MOBILE_OUTCOME = "Not Mobile";
+            static final String NOT_FOUND_OUTCOME = "False";
+           // static final String NOT_MOBILE_OUTCOME = "Not Mobile";
             private static final String BUNDLE = VerifyAuthLookupNode.class.getName();
 
             @Override
@@ -147,7 +147,7 @@ public class VerifyAuthLookupNode extends AbstractDecisionNode {
                         )
                 );
                 results.add(new Outcome(NOT_FOUND_OUTCOME, NOT_FOUND_OUTCOME));
-                results.add(new Outcome(NOT_MOBILE_OUTCOME, NOT_MOBILE_OUTCOME));
+                //results.add(new Outcome(NOT_MOBILE_OUTCOME, NOT_MOBILE_OUTCOME));
                 results.add(new Outcome(ERROR_OUTCOME, ERROR_OUTCOME));
 
                 return Collections.unmodifiableList(results);

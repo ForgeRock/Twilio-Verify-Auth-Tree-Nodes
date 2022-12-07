@@ -91,7 +91,7 @@ public class VerifyAuthIdentifierNode extends AbstractDecisionNode {
         logger.debug(loggerPrefix + "Started");
         try {
             ActionBuilder action;
-            action = Action.goTo("Found");
+            action = Action.goTo("True");
             String username = context.sharedState.get(USERNAME).asString();
             String userIdentifier = null;
             Set<String> identifiers;
@@ -102,7 +102,7 @@ public class VerifyAuthIdentifierNode extends AbstractDecisionNode {
                 logger.debug(loggerPrefix + "User identifier found: " + userIdentifier);
             } else {
                 logger.debug(loggerPrefix + "User identifier not found");
-                action = Action.goTo("Not Found");
+                action = Action.goTo("False");
                 return action.build();
             }
             JsonValue copyState = context.sharedState.copy().put(config.identifierSharedState(), userIdentifier);
@@ -121,9 +121,9 @@ public class VerifyAuthIdentifierNode extends AbstractDecisionNode {
         /**
          * Outcomes Ids for this node.
          */
-        static final String SUCCESS_OUTCOME = "Found";
+        static final String SUCCESS_OUTCOME = "True";
         static final String ERROR_OUTCOME = "Error";
-        static final String NOT_FOUND_OUTCOME = "Not Found";
+        static final String NOT_FOUND_OUTCOME = "False";
         private static final String BUNDLE = VerifyAuthIdentifierNode.class.getName();
 
         @Override
