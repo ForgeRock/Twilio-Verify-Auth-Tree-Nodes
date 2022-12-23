@@ -15,8 +15,7 @@
 -->
 # Twilio Verify Auth Nodes
 
-An authentication node for ForgeRock's Identity Platform 6.0.0 and above which integrates the Twilio Verify service
- with AM. 
+An authentication node for ForgeRock's Identity Platform 7.0.0 and ForgeRock Identity Cloud which integrates the Twilio Verify service with AM.
 
 ## Usage 
 
@@ -72,16 +71,12 @@ To deploy this flow via the [AM-treetool](https://github.com/jonknightfr/AM-tree
 ![ScreenShot](./images/verify.png)
 
 ### Example Flow 2
-The example flow above validates the user's username and password, identifies the users, pulls the phone number from the users profile, and sends a one-time password via SMS to that phone number. The Identify Exister User Node has the following configuration
-* **Identifier** - _id
-* **Identity Attribute** - userName
+The example flow above validates the user's username and password, identifies the users, pulls the phone number from the users profile, and sends a one-time password via SMS to that phone number. The Identify Exister User Node is used to identify the user.
 
 ![ScreenShot](./images/verify-2.png)
 
 ### Example Flow 3
-The example flow above validates the user's username and password, identifies the users, pulls the phone number from the users profile, verifies the phone number is a mobile carrier, and sends a one-time password via SMS to that phone number. The Identify Exister User Node has the following configuration:
-* **Identifier** - _id
-* **Identity Attribute** - userName
+The example flow above validates the user's username and password, identifies the users, pulls the phone number from the users profile, verifies the phone number is a mobile carrier, and sends a one-time password via SMS to that phone number. The Identify Exister User Node is used to identify the user.
 
 ![ScreenShot](./images/verify-3.png)
 
