@@ -18,7 +18,9 @@
 package com.twilio.verify;
 
 import static org.forgerock.openam.auth.node.api.Action.send;
-import com.sun.identity.sm.RequiredValueValidator;
+
+import com.iplanet.sso.SSOToken;
+import com.iplanet.sso.SSOTokenManager;
 import org.forgerock.openam.annotations.sm.Attribute;
 import org.forgerock.openam.auth.node.api.AbstractDecisionNode;
 import org.forgerock.openam.auth.node.api.Action;
@@ -43,12 +45,20 @@ import static org.forgerock.openam.auth.node.api.SharedStateConstants.USERNAME;
 import java.util.Set;
 import org.forgerock.openam.core.CoreWrapper;
 import org.forgerock.openam.auth.node.api.Action.ActionBuilder;
-import com.sun.identity.idm.AMIdentity;
 import org.forgerock.json.JsonValue;
 import java.util.Arrays;
 import org.forgerock.util.i18n.PreferredLocales;
 import java.util.Collections;
-
+import static org.forgerock.openam.auth.nodes.helpers.IdmIntegrationHelper.getAttributeFromContext;
+import static org.forgerock.openam.auth.nodes.helpers.IdmIntegrationHelper.getObject;
+import static org.forgerock.openam.auth.nodes.helpers.IdmIntegrationHelper.getUsernameFromContext;
+import static org.forgerock.openam.auth.nodes.helpers.IdmIntegrationHelper.stringAttribute;
+import static org.forgerock.openam.integration.idm.IdmIntegrationService.ALL_FIELDS;
+import static org.forgerock.openam.integration.idm.IdmIntegrationService.DEFAULT_IDM_IDENTITY_ATTRIBUTE;
+import static org.forgerock.openam.integration.idm.IdmIntegrationService.DEFAULT_IDM_MAIL_ATTRIBUTE;
+import static org.forgerock.openam.integration.idm.IdmIntegrationService.EXPAND_ALL_RELATIONSHIPS;
+import org.forgerock.openam.integration.idm.IdmIntegrationService;
+import org.forgerock.openam.core.realms.Realm;
 /**
  * Twilio Verify Collector Decision Node
  */
@@ -59,6 +69,10 @@ public class VerifyAuthIdentifierNode extends AbstractDecisionNode {
     private final Config config;
     private String loggerPrefix = "[Twilio Identifier Node][Partner] ";
     private final CoreWrapper coreWrapper;
+
+    private final IdmIntegrationService idmIntegrationService;
+
+    private final Realm realm;
 
     /**
      * Configuration for the node.
@@ -72,6 +86,11 @@ public class VerifyAuthIdentifierNode extends AbstractDecisionNode {
         default String identifierSharedState() {
             return "userIdentifier";
         }
+
+        @Attribute(order = 300)
+        default String identityAttribute() {
+            return "userName";
+        }
     }
 
     /**
@@ -81,9 +100,13 @@ public class VerifyAuthIdentifierNode extends AbstractDecisionNode {
      * @param config The service config.
      */
     @Inject
-    public VerifyAuthIdentifierNode(@Assisted Config config, CoreWrapper coreWrapper) {
+    public VerifyAuthIdentifierNode(@Assisted Config config, CoreWrapper coreWrapper, @Assisted Realm realm,
+                                    IdmIntegrationService idmIntegrationService) {
         this.coreWrapper = coreWrapper;
+        this.realm = realm;
         this.config = config;
+        this.idmIntegrationService = idmIntegrationService;
+
     }
 
     @Override
@@ -93,18 +116,28 @@ public class VerifyAuthIdentifierNode extends AbstractDecisionNode {
             ActionBuilder action;
             action = Action.goTo("True");
             String username = context.sharedState.get(USERNAME).asString();
-            String userIdentifier = null;
-            Set<String> identifiers;
             logger.debug(loggerPrefix + "Grabbing user identifiers for " + config.identifierAttribute());
-            identifiers = coreWrapper.getIdentity(username,coreWrapper.convertRealmPathToRealmDn(context.sharedState.get(REALM).asString())).getAttribute(config.identifierAttribute());
-            if (identifiers != null && !identifiers.isEmpty()) {
-                userIdentifier = identifiers.iterator().next();
+
+
+            Optional<String> identity = stringAttribute(getAttributeFromContext(idmIntegrationService, context,
+                    config.identityAttribute()))
+                    .or(() -> stringAttribute(getUsernameFromContext(idmIntegrationService, context)));
+            identity.ifPresent(id -> logger.debug("Retrieving {} {}", context.identityResource, id));
+
+            Optional<JsonValue> managedObject = getObject(idmIntegrationService, realm, context.request.locales,
+                    context.identityResource, config.identityAttribute(), identity,
+                    ALL_FIELDS, EXPAND_ALL_RELATIONSHIPS);
+            String userIdentifier  = managedObject.get().get(config.identifierAttribute()).asString();
+
+            if (userIdentifier != null && !userIdentifier.isEmpty()) {
                 logger.debug(loggerPrefix + "User identifier found: " + userIdentifier);
-            } else {
+            }
+            else {
                 logger.debug(loggerPrefix + "User identifier not found");
                 action = Action.goTo("False");
                 return action.build();
-            }
+             }
+
             JsonValue copyState = context.sharedState.copy().put(config.identifierSharedState(), userIdentifier);
             return action.replaceSharedState(copyState).build();
         } catch (Exception e) {

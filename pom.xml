@@ -23,12 +23,12 @@
     <artifactId>VerifyAuthNode</artifactId>
 
     <groupId>com.twilio</groupId>
-    <version>1.4.8</version>
+    <version>1.4.13</version>
     <name>Twilio Auth Tree Node</name>
     <description>An Authentication Tree Node integrating Twilio's Verify service with AM </description>
 
     <properties>
-        <am.version>7.0.0</am.version>
+        <am.version>LATEST</am.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -70,6 +70,11 @@
         </dependency>
         <dependency>
             <groupId>org.forgerock.am</groupId>
+            <artifactId>openam-core-rest</artifactId>
+            <scope>provided</scope>
+         </dependency>
+        <dependency>
+            <groupId>org.forgerock.am</groupId>
             <artifactId>openam-core</artifactId>
             <type>test-jar</type>
         </dependency>
@@ -83,6 +88,10 @@
             <groupId>org.forgerock.am</groupId>
             <artifactId>openam-core</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.forgerock.am</groupId>
+            <artifactId>openam-idm-integration-service</artifactId>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
