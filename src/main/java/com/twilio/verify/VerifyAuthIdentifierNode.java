@@ -17,48 +17,25 @@
 
 package com.twilio.verify;
 
-import static org.forgerock.openam.auth.node.api.Action.send;
-
-import com.iplanet.sso.SSOToken;
-import com.iplanet.sso.SSOTokenManager;
+import com.google.inject.assistedinject.Assisted;
+import org.forgerock.json.JsonValue;
 import org.forgerock.openam.annotations.sm.Attribute;
 import org.forgerock.openam.auth.node.api.AbstractDecisionNode;
 import org.forgerock.openam.auth.node.api.Action;
+import org.forgerock.openam.auth.node.api.Action.ActionBuilder;
 import org.forgerock.openam.auth.node.api.Node;
 import org.forgerock.openam.auth.node.api.TreeContext;
+import org.forgerock.openam.core.CoreWrapper;
+import org.forgerock.util.i18n.PreferredLocales;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.forgerock.openam.sm.annotations.adapters.Password;
-import com.google.common.base.Strings;
-import com.google.inject.assistedinject.Assisted;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
+
 import javax.inject.Inject;
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.NameCallback;
-import javax.security.auth.callback.PasswordCallback;
-import javax.security.auth.callback.TextOutputCallback;
+import java.util.*;
+
 import static org.forgerock.openam.auth.node.api.SharedStateConstants.REALM;
 import static org.forgerock.openam.auth.node.api.SharedStateConstants.USERNAME;
-import java.util.Set;
-import org.forgerock.openam.core.CoreWrapper;
-import org.forgerock.openam.auth.node.api.Action.ActionBuilder;
-import org.forgerock.json.JsonValue;
-import java.util.Arrays;
-import org.forgerock.util.i18n.PreferredLocales;
-import java.util.Collections;
-import static org.forgerock.openam.auth.nodes.helpers.IdmIntegrationHelper.getAttributeFromContext;
-import static org.forgerock.openam.auth.nodes.helpers.IdmIntegrationHelper.getObject;
-import static org.forgerock.openam.auth.nodes.helpers.IdmIntegrationHelper.getUsernameFromContext;
-import static org.forgerock.openam.auth.nodes.helpers.IdmIntegrationHelper.stringAttribute;
-import static org.forgerock.openam.integration.idm.IdmIntegrationService.ALL_FIELDS;
-import static org.forgerock.openam.integration.idm.IdmIntegrationService.DEFAULT_IDM_IDENTITY_ATTRIBUTE;
-import static org.forgerock.openam.integration.idm.IdmIntegrationService.DEFAULT_IDM_MAIL_ATTRIBUTE;
-import static org.forgerock.openam.integration.idm.IdmIntegrationService.EXPAND_ALL_RELATIONSHIPS;
-import org.forgerock.openam.integration.idm.IdmIntegrationService;
-import org.forgerock.openam.core.realms.Realm;
+import static org.forgerock.openam.auth.nodes.helpers.IdmIntegrationHelper.*;
 /**
  * Twilio Verify Collector Decision Node
  */
@@ -70,9 +47,7 @@ public class VerifyAuthIdentifierNode extends AbstractDecisionNode {
     private String loggerPrefix = "[Twilio Identifier Node][Partner] ";
     private final CoreWrapper coreWrapper;
 
-    private final IdmIntegrationService idmIntegrationService;
 
-    private final Realm realm;
 
     /**
      * Configuration for the node.
@@ -87,10 +62,6 @@ public class VerifyAuthIdentifierNode extends AbstractDecisionNode {
             return "userIdentifier";
         }
 
-        @Attribute(order = 300)
-        default String identityAttribute() {
-            return "userName";
-        }
     }
 
     /**
@@ -100,12 +71,9 @@ public class VerifyAuthIdentifierNode extends AbstractDecisionNode {
      * @param config The service config.
      */
     @Inject
-    public VerifyAuthIdentifierNode(@Assisted Config config, CoreWrapper coreWrapper, @Assisted Realm realm,
-                                    IdmIntegrationService idmIntegrationService) {
+    public VerifyAuthIdentifierNode(@Assisted Config config, CoreWrapper coreWrapper) {
         this.coreWrapper = coreWrapper;
-        this.realm = realm;
         this.config = config;
-        this.idmIntegrationService = idmIntegrationService;
 
     }
 
@@ -119,7 +87,7 @@ public class VerifyAuthIdentifierNode extends AbstractDecisionNode {
             logger.debug(loggerPrefix + "Grabbing user identifiers for " + config.identifierAttribute());
             Set<String> identifiers = null;
             String userIdentifier = null;
-            coreWrapper.getIdentityOrElseSearchUsingAuthNUserAlias(username,coreWrapper.convertRealmPathToRealmDn(context.sharedState.get(REALM).asString())).getAttribute(config.identifierAttribute());
+            identifiers = coreWrapper.getIdentityOrElseSearchUsingAuthNUserAlias(username, coreWrapper.convertRealmPathToRealmDn(context.sharedState.get(REALM).asString())).getAttribute(config.identifierAttribute());
             if (identifiers != null && !identifiers.isEmpty()) {
                 userIdentifier = identifiers.iterator().next();
                 logger.debug(loggerPrefix + "User identifier found: " + userIdentifier);
@@ -133,7 +101,7 @@ public class VerifyAuthIdentifierNode extends AbstractDecisionNode {
         } catch (Exception e) {
             logger.error(loggerPrefix + "Exception occurred" + e.getMessage());
             e.printStackTrace();
-            context.sharedState.put("Exception", e.toString());
+            context.getStateFor(this).putShared("Exception", e.toString());
             ActionBuilder action;
             action = Action.goTo("Error");
             return action.build();

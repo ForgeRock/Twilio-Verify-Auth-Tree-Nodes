@@ -17,36 +17,27 @@
 
 package com.twilio.verify;
 
-import static org.forgerock.openam.auth.node.api.Action.send;
-
+import com.google.inject.assistedinject.Assisted;
+import com.sun.identity.sm.RequiredValueValidator;
+import com.twilio.Twilio;
+import com.twilio.rest.verify.v2.service.Verification;
+import org.forgerock.json.JsonValue;
 import org.forgerock.openam.annotations.sm.Attribute;
 import org.forgerock.openam.auth.node.api.AbstractDecisionNode;
 import org.forgerock.openam.auth.node.api.Action;
 import org.forgerock.openam.auth.node.api.Node;
-import org.forgerock.openam.auth.node.api.SingleOutcomeNode;
 import org.forgerock.openam.auth.node.api.TreeContext;
 import org.forgerock.openam.sm.annotations.adapters.Password;
+import org.forgerock.util.i18n.PreferredLocales;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.inject.assistedinject.Assisted;
-import com.sun.identity.sm.RequiredValueValidator;
-
-import com.twilio.Twilio;
-import com.twilio.rest.verify.v2.service.Verification;
-import com.twilio.rest.verify.v2.service.VerificationCheck;
-import java.util.List;
-import java.util.ResourceBundle;
-import org.forgerock.util.i18n.PreferredLocales;
 import javax.inject.Inject;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.TextOutputCallback;
-import org.forgerock.openam.auth.node.api.OutcomeProvider;
-import java.util.ArrayList;
-import java.util.Arrays;
-import org.forgerock.util.i18n.PreferredLocales;
-import java.util.Collections;
-import org.forgerock.json.JsonValue;
+import java.util.*;
+
+import static org.forgerock.openam.auth.node.api.Action.send;
 /**
  * Twilio Verify Sender Node
  */
