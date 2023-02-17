@@ -117,27 +117,17 @@ public class VerifyAuthIdentifierNode extends AbstractDecisionNode {
             action = Action.goTo("True");
             String username = context.sharedState.get(USERNAME).asString();
             logger.debug(loggerPrefix + "Grabbing user identifiers for " + config.identifierAttribute());
-
-
-            Optional<String> identity = stringAttribute(getAttributeFromContext(idmIntegrationService, context,
-                    config.identityAttribute()))
-                    .or(() -> stringAttribute(getUsernameFromContext(idmIntegrationService, context)));
-            identity.ifPresent(id -> logger.debug("Retrieving {} {}", context.identityResource, id));
-
-            Optional<JsonValue> managedObject = getObject(idmIntegrationService, realm, context.request.locales,
-                    context.identityResource, config.identityAttribute(), identity,
-                    ALL_FIELDS, EXPAND_ALL_RELATIONSHIPS);
-            String userIdentifier  = managedObject.get().get(config.identifierAttribute()).asString();
-
-            if (userIdentifier != null && !userIdentifier.isEmpty()) {
+            Set<String> identifiers = null;
+            String userIdentifier = null;
+            coreWrapper.getIdentityOrElseSearchUsingAuthNUserAlias(username,coreWrapper.convertRealmPathToRealmDn(context.sharedState.get(REALM).asString())).getAttribute(config.identifierAttribute());
+            if (identifiers != null && !identifiers.isEmpty()) {
+                userIdentifier = identifiers.iterator().next();
                 logger.debug(loggerPrefix + "User identifier found: " + userIdentifier);
-            }
-            else {
+            } else {
                 logger.debug(loggerPrefix + "User identifier not found");
                 action = Action.goTo("False");
                 return action.build();
-             }
-
+            }
             JsonValue copyState = context.sharedState.copy().put(config.identifierSharedState(), userIdentifier);
             return action.replaceSharedState(copyState).build();
         } catch (Exception e) {
