@@ -23,7 +23,7 @@
     <artifactId>VerifyAuthNode</artifactId>
 
     <groupId>com.twilio</groupId>
-    <version>1.4.13</version>
+    <version>1.4.21</version>
     <name>Twilio Auth Tree Node</name>
     <description>An Authentication Tree Node integrating Twilio's Verify service with AM </description>
 
@@ -70,6 +70,14 @@
         </dependency>
         <dependency>
             <groupId>org.forgerock.am</groupId>
+            <artifactId>identity-api</artifactId>
+        </dependency>
+        <dependency>
+           <groupId>org.forgerock.am</groupId>
+           <artifactId>openam-idm-integration-service</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.forgerock.am</groupId>
             <artifactId>openam-core-rest</artifactId>
             <scope>provided</scope>
          </dependency>
@@ -88,10 +96,6 @@
             <groupId>org.forgerock.am</groupId>
             <artifactId>openam-core</artifactId>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.forgerock.am</groupId>
-            <artifactId>openam-idm-integration-service</artifactId>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
