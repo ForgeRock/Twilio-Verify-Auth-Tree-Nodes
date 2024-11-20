@@ -98,6 +98,11 @@ public class VerifyAuthCollectorDecisionNode extends AbstractDecisionNode {
             return "cancel";
         }
 
+        @Attribute(order = 700)
+        default String nextButtonText() {
+            return "next";
+        }
+
     }
 
 
@@ -190,19 +195,19 @@ public class VerifyAuthCollectorDecisionNode extends AbstractDecisionNode {
             callbacks.add(new NameCallback(bundle.getString("callback.code")));
         }
         if (config.showResendButton() && config.showCancelButton()) {
-          ConfirmationCallback confirmationCallbackResendCancel = new ConfirmationCallback(ConfirmationCallback.INFORMATION, new String[] {"Next", config.resendButtonText(), config.cancelButtonText()}, 1);
+          ConfirmationCallback confirmationCallbackResendCancel = new ConfirmationCallback(ConfirmationCallback.INFORMATION, new String[] {config.nextButtonText(), config.resendButtonText(), config.cancelButtonText()}, 1);
 
           callbacks.add(confirmationCallbackResendCancel);
         }
 
         else if (config.showResendButton()) {
-          ConfirmationCallback confirmationCallbackResend = new ConfirmationCallback(ConfirmationCallback.INFORMATION, new String[] {"Next", config.resendButtonText()}, 1);
+          ConfirmationCallback confirmationCallbackResend = new ConfirmationCallback(ConfirmationCallback.INFORMATION, new String[] {config.nextButtonText(), config.resendButtonText()}, 1);
           callbacks.add(confirmationCallbackResend);
 
         }
 
         else if (config.showCancelButton()) {
-          ConfirmationCallback confirmationCallbackCancel = new ConfirmationCallback(ConfirmationCallback.INFORMATION, new String[] {"Next", config.cancelButtonText()}, 1);
+          ConfirmationCallback confirmationCallbackCancel = new ConfirmationCallback(ConfirmationCallback.INFORMATION, new String[] {config.nextButtonText(), config.cancelButtonText()}, 1);
           callbacks.add(confirmationCallbackCancel);
         }
         
