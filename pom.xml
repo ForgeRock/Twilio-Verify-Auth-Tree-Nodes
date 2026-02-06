@@ -122,6 +122,14 @@
 
     <repositories>
         <repository>
+            <id>forgerock-build-dependencies</id> 
+            <name>ForgeRock Dependencies Repository</name>
+            <url>https://maven.forgerock.org/artifactory/forgerock-openam-8.0.2-dependencies</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
             <id>forgerock-internal-releases</id>
             <name>ForgeRock Internal Releases Repository</name>
             <url>https://maven.forgerock.org/artifactory/internal-releases</url>
