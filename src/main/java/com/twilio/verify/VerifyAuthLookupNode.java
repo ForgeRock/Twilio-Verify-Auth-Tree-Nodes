@@ -20,7 +20,7 @@ package com.twilio.verify;
 import com.google.inject.assistedinject.Assisted;
 import com.sun.identity.sm.RequiredValueValidator;
 import com.twilio.Twilio;
-import com.twilio.rest.lookups.v1.PhoneNumber;
+import com.twilio.rest.lookups.v2.PhoneNumber;
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.annotations.sm.Attribute;
 import org.forgerock.openam.auth.node.api.AbstractDecisionNode;
@@ -93,11 +93,11 @@ public class VerifyAuthLookupNode extends AbstractDecisionNode {
             }
             logger.debug(loggerPrefix + "User phone number" + phoneNumber);
             PhoneNumber number = PhoneNumber
-                    .fetcher(new com.twilio.type.PhoneNumber(phoneNumber))
-                    .setType("carrier")
+                    .fetcher(phoneNumber)
+                    .setFields("line_type_intelligence")
                     .fetch();
 
-             String type = number.getCarrier().get("type");
+             String type = number.getLineTypeIntelligence().getType();
              if (type.equals("mobile")) {
                 logger.debug(loggerPrefix + "Phone type is mobile");
                 return Action.goTo("True").build();

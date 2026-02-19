@@ -19,14 +19,16 @@ package com.twilio.verify;
 
 import static org.forgerock.openam.auth.node.api.Action.send;
 
+import com.sun.identity.sm.RequiredValueValidator;
 import org.forgerock.openam.annotations.sm.Attribute;
 import org.forgerock.openam.auth.node.api.AbstractDecisionNode;
 import org.forgerock.openam.auth.node.api.Action;
 import org.forgerock.openam.auth.node.api.Node;
 import org.forgerock.openam.auth.node.api.TreeContext;
+import org.forgerock.openam.sm.annotations.adapters.Password;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import com.twilio.Twilio;
 import com.google.common.base.Strings;
 import com.google.inject.assistedinject.Assisted;
 import com.twilio.rest.verify.v2.service.VerificationCheck;
@@ -64,6 +66,18 @@ public class VerifyAuthCollectorDecisionNode extends AbstractDecisionNode {
      * Configuration for the node.
      */
     public interface Config {
+
+        @Attribute(order = 50)
+        default String accountSID() {
+            return "";
+        }
+
+        /**
+         * The authentication token found in the Twilio account dashboard.
+         */
+        @Attribute(order = 75)
+        @Password
+        char[] authToken();
 
         /**
          * Enable whether the one-time password should be a password.
@@ -171,7 +185,16 @@ public class VerifyAuthCollectorDecisionNode extends AbstractDecisionNode {
 
 
     private Action checkCode(String verifySID, String code, String userIdentifier) {
-        VerificationCheck verification = VerificationCheck.creator(verifySID, code).setTo(userIdentifier).create();
+
+        String accountSid = config.accountSID();
+        String authToken = config.authToken() != null
+                ? String.valueOf(config.authToken())
+                : null;
+
+        if (accountSid != null && !accountSid.isBlank() && authToken != null && !authToken.isBlank()) {
+            Twilio.init(config.accountSID(), String.valueOf(config.authToken()));
+        }
+        VerificationCheck verification = VerificationCheck.creator(verifySID).setTo(userIdentifier).setCode(code).create();
         logger.debug(loggerPrefix + "Verification Status: {}", verification.getStatus());
         if ("approved".equals(verification.getStatus())) {
             return Action.goTo("true").build();
