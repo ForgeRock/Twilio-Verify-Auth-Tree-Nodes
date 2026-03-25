@@ -18,6 +18,7 @@
 package com.twilio.verify;
 
 import com.google.inject.assistedinject.Assisted;
+import com.sun.identity.idm.AMIdentity;
 import org.forgerock.json.JsonValue;
 import org.forgerock.openam.annotations.sm.Attribute;
 import org.forgerock.openam.auth.node.api.AbstractDecisionNode;
@@ -29,10 +30,9 @@ import org.forgerock.openam.core.CoreWrapper;
 import org.forgerock.util.i18n.PreferredLocales;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import javax.inject.Inject;
 import java.util.*;
-
+import com.sun.identity.idm.IdUtils;
 import static org.forgerock.openam.auth.node.api.SharedStateConstants.REALM;
 import static org.forgerock.openam.auth.node.api.SharedStateConstants.USERNAME;
 import static org.forgerock.openam.auth.nodes.helpers.IdmIntegrationHelper.*;
@@ -87,7 +87,10 @@ public class VerifyAuthIdentifierNode extends AbstractDecisionNode {
             logger.debug(loggerPrefix + "Grabbing user identifiers for " + config.identifierAttribute());
             Set<String> identifiers = null;
             String userIdentifier = null;
-            identifiers = coreWrapper.getIdentityOrElseSearchUsingAuthNUserAlias(username, coreWrapper.convertRealmPathToRealmDn(context.sharedState.get(REALM).asString())).getAttribute(config.identifierAttribute());
+
+            AMIdentity identity = IdUtils.getIdentity(username, context.sharedState.get(REALM).asString());
+            identifiers = identity.getAttribute(config.identifierAttribute());
+
             if (identifiers != null && !identifiers.isEmpty()) {
                 userIdentifier = identifiers.iterator().next();
                 logger.debug(loggerPrefix + "User identifier found: " + userIdentifier);
