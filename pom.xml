@@ -124,7 +124,7 @@
         <repository>
             <id>forgerock-build-dependencies</id> 
             <name>ForgeRock Dependencies Repository</name>
-            <url>https://maven.forgerock.org/artifactory/forgerock-openam-8.0.2-dependencies</url>
+            <url>https://maven.forgerock.org/artifactory/forgerock-openam-7.5.1-dependencies</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
